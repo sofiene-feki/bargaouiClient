@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 import { ChartBarIcon } from "@heroicons/react/24/outline";
 
-const UserSettingsContent = () => {
+const UserSettingsContent = ({ setUserMenuOpen }) => {
   const [view, setView] = useState("main"); // main | pixel | google | analytics
 
   const goBack = () => setView("main");
@@ -26,23 +26,35 @@ const UserSettingsContent = () => {
     <div className="relative w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg p-4 overflow-y-auto h-full">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-gray-800">
-          {view === "main"
-            ? "Paramètres"
-            : view === "pixel"
-            ? "Configurer Facebook Pixel"
-            : view === "google"
-            ? "Configurer Google Search Console"
-            : "Configurer Google Analytics"}
-        </h2>
-        {view !== "main" && (
-          <button
-            onClick={goBack}
-            className="text-sm text-blue-500 hover:underline"
-          >
-            ← Retour
-          </button>
-        )}
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-bold text-gray-800">
+            {view === "main"
+              ? "Paramètres"
+              : view === "pixel"
+              ? "Configurer Facebook Pixel"
+              : view === "google"
+              ? "Configurer Google Search Console"
+              : "Configurer Google Analytics"}
+          </h2>
+
+          {/* Back button only if not main view */}
+          {view !== "main" && (
+            <button
+              onClick={goBack}
+              className="text-sm text-blue-500 hover:underline"
+            >
+              ← Retour
+            </button>
+          )}
+        </div>
+
+        {/* X button to close modal */}
+        <button
+          onClick={() => setUserMenuOpen(false)}
+          className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+        >
+          ✖
+        </button>
       </div>
 
       {/* MAIN SETTINGS VIEW */}

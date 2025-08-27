@@ -138,7 +138,7 @@ export default function Header() {
                   onClose={() => setUserMenuOpen(false)}
                   position="right"
                 >
-                  <UserSettingsContent />
+                  <UserSettingsContent setUserMenuOpen={setUserMenuOpen} />
                 </CustomDialog>
               </>
             ) : (
@@ -187,12 +187,13 @@ export default function Header() {
                 <ul className="space-y-4">
                   {navigation.map((item) => (
                     <li key={item.name}>
-                      <a
-                        href={item.href}
-                        className="block text-gray-700 hover:text-green-600 font-medium transition"
+                      <Link
+                        to={item.href}
+                        cl
+                        LinkssName="block text-gray-700 hover:text-green-600 font-medium transition"
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
