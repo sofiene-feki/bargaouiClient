@@ -23,7 +23,7 @@ export default function NewArrivals() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const SERVER_URL = "http://localhost:8000";
+  const SERVER_URL = "https://bargaouiserver.onrender.com";
 
   const normalizeMediaSrc = (input) => {
     if (!input) return input;

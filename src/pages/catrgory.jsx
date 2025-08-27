@@ -28,7 +28,7 @@ export default function Category() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const SERVER_URL = "https://supersiesta-server-i63m.onrender.com";
+  const SERVER_URL = "https://bargaouiserver.onrender.com";
 
   // Normalize single product or array of products
   const normalizeMediaSrc = (input) => {

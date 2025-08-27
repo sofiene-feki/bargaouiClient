@@ -59,7 +59,7 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(isCreate ? emptyProduct : null);
   const [loading, setLoading] = useState(true);
 
-  const SERVER_URL = "http://localhost:8000";
+  const SERVER_URL = "https://bargaouiserver.onrender.com";
 
   // Normalize both media and colors
   const normalizeMediaSrc = (product) => {

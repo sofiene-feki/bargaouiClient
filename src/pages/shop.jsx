@@ -51,7 +51,7 @@ export default function Shop() {
   const start = currentPage * productsPerPage + 1;
   const end = Math.min((currentPage + 1) * productsPerPage, totalProducts);
 
-  const SERVER_URL = "http://localhost:8000";
+  const SERVER_URL = "https://bargaouiserver.onrender.com";
 
   // Normalize single product or array of products
   const normalizeMediaSrc = (input) => {

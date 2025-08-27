@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8000/api"; // change to your server URL
+const API_BASE_URL = "https://bargaouiserver.onrender.com/api"; // change to your server URL
 
 // ✅ Get all orders
 export const getOrders = async () => {
