@@ -219,22 +219,37 @@ export default function ProductDetails() {
       formData.append("Price", Number(product.Price) || 0);
       formData.append("promotion", Number(product.promotion) || 0);
       formData.append("Description", product.Description || "");
-      formData.append("Quantity", product.Quantity);
-      formData.append("sold", product.sold);
+      formData.append("Quantity", product.Quantity || 0);
+      formData.append("sold", product.sold || 0);
       if (product.category) formData.append("Category", product.category);
+      if (product.subCategory)
+        formData.append("subCategory", product.subCategory);
 
       // -------------------------
-      // Colors (send as indexed fields)
+      // Colors handling
       // -------------------------
       if (Array.isArray(product.colors)) {
-        product.colors.forEach((c, i) => {
-          if (c.name) formData.append(`colors[${i}][name]`, c.name);
-          if (c.value) formData.append(`colors[${i}][value]`, c.value);
+        // Prepare color payload without files
+        const colorsPayload = product.colors.map((c) => ({
+          _id: c._id || null, // keep ID for existing colors
+          name: c.name,
+          value: c.value,
+          type: c.type || "image",
+          alt: c.alt || "",
+        }));
+
+        formData.append("colors", JSON.stringify(colorsPayload));
+
+        // Append color files (only new uploads)
+        product.colors.forEach((c) => {
+          if (c.file) {
+            formData.append("colorFiles", c.file);
+          }
         });
       }
 
       // -------------------------
-      // Sizes (send as indexed fields)
+      // Sizes handling
       // -------------------------
       if (Array.isArray(product.sizes)) {
         product.sizes.forEach((s, i) => {
@@ -253,15 +268,8 @@ export default function ProductDetails() {
 
       const newFiles = product.media.filter((m) => m.file); // new uploads
 
-      console.log("🖼️ Full media array:", product.media);
-      console.log("📌 Existing media IDs to keep:", existingMediaIds);
-      console.log("🆕 New media files to upload:", newFiles);
-
-      // Append new files
-      newFiles.forEach((m, idx) => {
-        console.log(`✅ Appending new media file ${idx}:`, m.file.name);
-        formData.append("mediaFiles", m.file);
-      });
+      // Append new media files
+      newFiles.forEach((m) => formData.append("mediaFiles", m.file));
 
       // Append existing media IDs as repeated fields
       existingMediaIds.forEach((id) =>

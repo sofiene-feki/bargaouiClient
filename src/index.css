@@ -113,3 +113,6 @@ button:focus-visible {
 .animate-pulse-glow {
   animation: pulse-glow 2.5s infinite ease-in-out;
 }
+.slick-dots li.slick-active div.custom-dot {
+  opacity: 1 !important; /* Full opacity for active */
+}

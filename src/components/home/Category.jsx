@@ -20,17 +20,17 @@ const categories = [
   {
     name: "Women",
     image: women,
-    link: "/shop/women",
+    link: "/category/women",
   },
   {
     name: "Men",
     image: men,
-    link: "/shop/men",
+    link: "/category/men",
   },
   {
     name: "Kids",
     image: kids,
-    link: "/shop/kids",
+    link: "/category/kids",
   },
 ];
 // ✅ Arrows
@@ -103,9 +103,9 @@ export default function Category() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {categories.slice(0, 2).map((cat) => (
-          <a
+          <Link
             key={cat.name}
-            href={cat.link}
+            to={cat.link}
             className="relative group overflow-hidden  shadow-lg"
           >
             <img
@@ -125,12 +125,12 @@ export default function Category() {
                 Shop {cat.name}
               </button>
             </div>
-          </a>
+          </Link>
         ))}
 
         {/* Kids - Full width */}
-        <a
-          href={categories[2].link}
+        <Link
+          to={categories[2].link}
           className="relative group overflow-hidden  shadow-lg md:col-span-2"
         >
           <img
@@ -150,7 +150,7 @@ export default function Category() {
               Shop {categories[2].name}
             </button>
           </div>
-        </a>
+        </Link>
       </div>
     </section>
   );

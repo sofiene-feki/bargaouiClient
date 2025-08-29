@@ -5,6 +5,7 @@ import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { openCart } from "../../redux/ui/cartDrawer";
 import { addItem } from "../../redux/cart/cartSlice";
 import { useDispatch } from "react-redux";
+import Slider from "react-slick";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -19,6 +20,49 @@ export default function Product({ product, productsPerPage, loading }) {
     ? mainMedia.src
     : "https://via.placeholder.com/300";
   const imageAlt = mainMedia ? mainMedia.alt : product.name;
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    speed: 800,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
+    fade: true,
+    customPaging: function (i) {
+      // Use color from product.colors or default if main image
+      if (i === 0) {
+        return (
+          <div
+            style={{
+              width: "12px",
+              height: "12px",
+              borderRadius: "50%",
+              backgroundColor: "#ccc", // main image dot color
+            }}
+          ></div>
+        );
+      }
+      const color = product.colors?.[i - 1]; // Because first dot is main image
+      return (
+        <div
+          style={{
+            width: "12px",
+            height: "12px",
+            borderRadius: "50%",
+            backgroundColor: color?.value || "#ccc",
+          }}
+        ></div>
+      );
+    },
+    appendDots: (dots) => (
+      <ul style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+        {dots}
+      </ul>
+    ),
+  };
 
   // Get first color name or empty string
   const firstColor = product.colors?.[0] || "";
@@ -91,11 +135,81 @@ export default function Product({ product, productsPerPage, loading }) {
           >
             {/* Product Image fills most of the card */}
             <div className="w-full flex-1 overflow-hidden">
-              <img
-                src={imageSrc}
-                alt={product.Title}
-                className="w-full h-52 md:h-120 object-cover transition-transform duration-500 group-hover:scale-110 h-52"
-              />
+              <Slider
+                {...{
+                  dots: true,
+                  infinite: true,
+                  autoplay: true,
+                  autoplaySpeed: 3000,
+                  speed: 800,
+                  slidesToShow: 1,
+                  slidesToScroll: 1,
+                  arrows: false,
+                  fade: true,
+                  appendDots: (dots) => (
+                    <div
+                      style={{
+                        backgroundColor: "#fff",
+                        padding: "10px",
+                        marginBottom: "14px",
+                      }}
+                    >
+                      <ul
+                        style={{
+                          margin: "0px",
+                          display: "flex",
+                          justifyContent: "center",
+                          gap: "3px",
+                        }}
+                      >
+                        {dots}
+                      </ul>
+                    </div>
+                  ),
+                  customPaging: (i) => {
+                    let bgColor = "#ccc"; // default for main image
+                    if (i > 0 && product.colors && product.colors[i - 1]) {
+                      bgColor = product.colors[i - 1].value;
+                    }
+
+                    return (
+                      <div
+                        className="custom-dot"
+                        style={{
+                          width: "20px",
+                          height: "4px",
+                          borderRadius: "20%",
+                          backgroundColor: bgColor,
+                          opacity: 0.3, // default low opacity
+                          transition: "opacity 0.3s ease",
+                        }}
+                      ></div>
+                    );
+                  },
+                }}
+              >
+                {/* Main product image */}
+                {mainMedia && (
+                  <div>
+                    <img
+                      src={imageSrc}
+                      alt={product.Title}
+                      className="w-full h-52 md:h-120 object-cover"
+                    />
+                  </div>
+                )}
+
+                {/* Color images */}
+                {product.colors?.map((color, i) => (
+                  <div key={color._id || i}>
+                    <img
+                      src={`http://localhost:8000${color.src}`}
+                      alt={color.name}
+                      className="w-full h-52 md:h-120 object-cover"
+                    />
+                  </div>
+                ))}
+              </Slider>
             </div>
 
             {/* Text Under Image */}
@@ -107,24 +221,27 @@ export default function Product({ product, productsPerPage, loading }) {
                 <p className="text-sm text-gray-500">{product.Price} DT</p>
               </div>
 
-              <div className="flex gap-3 my-2">
+              <div className="w-3 h-1 bg-green rounded-md"></div>
+
+              {/* <div className="flex gap-3 my-2">
                 {product.colors?.map((c, i) => (
-                  <button
-                    key={i}
-                    style={{ backgroundColor: c.value ?? "#000" }}
-                    className={classNames(
-                      firstColor?.name === c.name
-                        ? "ring-2 ring-[#87a736] ring-offset-2"
-                        : "ring-1 ring-gray-300",
-                      "w-6 h-6 rounded-full border border-gray-200"
-                    )}
-                    // onClick={() => {
-                    //   setSelectedColor(c); // select color
-                    //   if (c?.src) setSelectedMedia(c); // update gallery to color image
-                    // }}
-                  />
+                  <div key={c.name || i} className="flex justify-center">
+                    <button
+                      style={{ backgroundColor: c.value ?? "#000" }}
+                      className={classNames(
+                        firstColor?.name === c.name
+                          ? "ring-2 ring-[#87a736] ring-offset-2"
+                          : "ring-1 ring-gray-300",
+                        "w-6 h-6 rounded-full border border-gray-200"
+                      )}
+                      // onClick={() => {
+                      //   setSelectedColor(c);
+                      //   if (c?.src) setSelectedMedia(c);
+                      // }}
+                    />
+                  </div>
                 ))}
-              </div>
+              </div> */}
             </div>
             <button
               onClick={handleAddToCart}
