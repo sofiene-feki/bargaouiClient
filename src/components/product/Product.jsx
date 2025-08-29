@@ -203,7 +203,7 @@ export default function Product({ product, productsPerPage, loading }) {
                 {product.colors?.map((color, i) => (
                   <div key={color._id || i}>
                     <img
-                      src={`http://localhost:8000${color.src}`}
+                      src={`https://bargaouiserver.onrender.com${color.src}`}
                       alt={color.name}
                       className="w-full h-52 md:h-120 object-cover"
                     />

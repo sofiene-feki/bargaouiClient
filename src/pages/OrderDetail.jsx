@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getOrderById, updateOrderStatus } from "../functions/order"; // updated axios functions
-import logo_supersiesta from "../assets/logo_supersiesta.png";
+import logo from "../assets/bragaouiBlack.png";
 import { PrinterIcon } from "@heroicons/react/24/outline";
 
 export default function OrderDetail() {
@@ -74,11 +74,7 @@ export default function OrderDetail() {
       <div className=" bg-white md:p-8 p-2 shadow-md rounded-lg border border-gray-300 ">
         {" "}
         <div className="flex items-center justify-between border-b  mb-4 print:border-none">
-          <img
-            src={logo_supersiesta}
-            alt="Logo"
-            className="md:h-12 h-8 w-auto mb-2"
-          />
+          <img src={logo} alt="Logo" className="md:h-12 h-8 w-auto mb-2" />
           <div className="text-right text-sm text-gray-600 print:text-black">
             <p>Réf #: {order._id}</p>
             <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
@@ -188,7 +184,7 @@ export default function OrderDetail() {
           <p className="mb-1"></p>
           <p className="mb-1">
             Tél : +216 12 345 678{" "}
-            <span className="ml-2">Email : contact@supersiesta.tn</span>
+            <span className="ml-2">Email : contact@artisantBargaoui.tn</span>
           </p>
         </div>
       </div>

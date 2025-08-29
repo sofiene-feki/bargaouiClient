@@ -124,7 +124,7 @@ export default function NewArrivals() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-0 ">
+    <div className="max-w-7xl mx-auto px-0 py-10 ">
       <h2 className="text-2xl md:text-4xl font-serif text-center my-4">
         Artisanat Bargaoui Services
       </h2>
@@ -165,7 +165,7 @@ const VideoSlide = ({ slide }) => {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full ">
       {/* Video */}
       <div className="relative w-full px-2 h-[300px] md:h-[350px] overflow-hidden">
         <video

@@ -4,7 +4,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { authStart, authSuccess, authFailure } from "../redux/user/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../service/firebase";
-import logo from "../assets/logo_supersiesta.png";
+import logo from "../assets/bragaouiBlack.png";
 
 export default function Login() {
   const dispatch = useDispatch();
