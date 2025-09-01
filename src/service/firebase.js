@@ -3,13 +3,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA37XJogNB_PokHRUAWBPZINx5wH8K9_24",
-  authDomain: "supersiesta-69c7e.firebaseapp.com",
-  projectId: "supersiesta-69c7e",
-  storageBucket: "supersiesta-69c7e.firebasestorage.app",
-  messagingSenderId: "620699181278",
-  appId: "1:620699181278:web:92799be8431088d992e24f",
-  measurementId: "G-S30ECZRR34",
+  apiKey: "AIzaSyDEzRHJixuGSGSp8vWlPArphiviGjpOZh8",
+  authDomain: "artisanatbargaoui-f9611.firebaseapp.com",
+  projectId: "artisanatbargaoui-f9611",
+  storageBucket: "artisanatbargaoui-f9611.firebasestorage.app",
+  messagingSenderId: "505197472720",
+  appId: "1:505197472720:web:18da3b2e08df3b7e9927d5",
+  measurementId: "G-B5VXZ5T0QC",
 };
 
 const app = initializeApp(firebaseConfig);

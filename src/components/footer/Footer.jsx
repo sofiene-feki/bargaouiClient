@@ -1,5 +1,4 @@
 import React from "react";
-import logo from "../../assets/logo_supersiesta.png";
 import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 
 export default function Footer() {

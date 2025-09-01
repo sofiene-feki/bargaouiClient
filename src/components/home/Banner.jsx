@@ -7,10 +7,6 @@ import {
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 
-import bannerBG from "../../assets/bannerBG.jpg";
-import iso9001 from "../../assets/Iso9001.png";
-import iso14001 from "../../assets/Iso14001.png";
-import iso45001 from "../../assets/Iso45001.png";
 import men from "../../assets/men.jpg";
 import women from "../../assets/women.jpg";
 import kid from "../../assets/kid.jpg";

@@ -13,14 +13,10 @@ import {
 } from "react-icons/fa";
 import { ChartBarIcon } from "@heroicons/react/24/outline";
 
-const UserSettingsContent = ({ setUserMenuOpen }) => {
+const UserSettingsContent = ({ setUserMenuOpen, handleSignOut }) => {
   const [view, setView] = useState("main"); // main | pixel | google | analytics
 
   const goBack = () => setView("main");
-
-  const handleSignOut = () => {
-    console.log("Sign out clicked");
-  };
 
   return (
     <div className="relative w-full max-w-md mx-auto bg-white rounded-2xl shadow-lg p-4 overflow-y-auto h-full">
@@ -103,6 +99,7 @@ const UserSettingsContent = ({ setUserMenuOpen }) => {
                   <Link
                     to="/orders"
                     className="flex items-center gap-2 text-gray-600 hover:underline"
+                    onClick={() => setUserMenuOpen(false)}
                   >
                     <FaBoxOpen />
                     Suivi des commandes

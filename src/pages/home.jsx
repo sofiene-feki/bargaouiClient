@@ -6,7 +6,7 @@ import ModelViewer from "../components/home/ModelViewer";
 import NewArrivals from "../components/home/NewArrivals";
 import SpecialOffer from "../components/home/SpecialOffer";
 import React from "react";
-import bg from "../assets/bg.png";
+import bg from "../assets/bg.jpg";
 
 export default function Home() {
   return (
@@ -19,13 +19,9 @@ export default function Home() {
       }}
     >
       <Banner />
-      <div className="h-2 bg-gray-200 block md:hidden"></div>
       <NewArrivals />
-      <div className="h-2 bg-gray-200 block md:hidden"></div>
       <Category />
-      <div className="h-2 bg-gray-200 block md:hidden"></div>
       <BestSellers />
-      <div className="h-2 bg-gray-200 block md:hidden"></div>
     </div>
   );
 }

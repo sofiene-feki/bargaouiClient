@@ -5,7 +5,6 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import logo from "./assets/logo_supersiesta.png";
 import logoBlack from "./assets/bragaouiBlack.png";
 
 import About from "./pages/about";

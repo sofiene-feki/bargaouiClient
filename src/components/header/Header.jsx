@@ -100,7 +100,7 @@ export default function Header() {
             className={`transition-all duration-700 transform font-bold font-serif ${
               isHome
                 ? isScrolled
-                  ? "text-xl scale-75 text-black translate-x-[-70px] md:translate-x-[-500px]"
+                  ? "text-base scale-75 text-black translate-x-[-85px] md:translate-x-[-500px]"
                   : "text-4xl md:text-9xl mt-25 drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)] md:mt-50 text-white scale-100 translate-x-0"
                 : "text-xl text-black scale-75 translate-x-[-70px] md:translate-x-[-500px]"
             }`}
@@ -127,18 +127,30 @@ export default function Header() {
           <div className="flex items-center gap-3 ">
             {isAuthenticated && userInfo ? (
               <>
-                <img
-                  className="w-9 h-9 rounded-full"
-                  src={userImg}
-                  alt="profile"
-                  onClick={() => setUserMenuOpen(true)}
-                />
+                <div className="relative inline-block">
+                  <img
+                    className={`w-6.5 h-6.5 rounded-full transition-colors ${
+                      isScrolled || !isHome
+                        ? "text-black ring-1 ring-black"
+                        : "text-white ring-1 ring-white"
+                    }`}
+                    src={userImg}
+                    alt="profile"
+                    onClick={() => setUserMenuOpen(true)}
+                  />
+                  {/* Online indicator */}
+                  <span className="absolute bottom-0 right-0 block w-2 h-2 bg-green-500 rounded-full ring-2 ring-white"></span>
+                </div>
+
                 <CustomDialog
                   open={userMenuOpen}
                   onClose={() => setUserMenuOpen(false)}
                   position="right"
                 >
-                  <UserSettingsContent setUserMenuOpen={setUserMenuOpen} />
+                  <UserSettingsContent
+                    setUserMenuOpen={setUserMenuOpen}
+                    handleSignOut={handleSignOut}
+                  />
                 </CustomDialog>
               </>
             ) : (
@@ -160,7 +172,7 @@ export default function Header() {
                 }`}
               />
               {totalQty > 0 && (
-                <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                <span className="absolute -top-1.5 -right-3 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                   {totalQty}
                 </span>
               )}
@@ -191,6 +203,7 @@ export default function Header() {
                         to={item.href}
                         cl
                         LinkssName="block text-gray-700 hover:text-green-600 font-medium transition"
+                        onClick={() => setMobileMenuOpen(false)}
                       >
                         {item.name}
                       </Link>
@@ -268,7 +281,7 @@ export default function Header() {
               aria-label="Toggle menu"
             >
               <Bars3Icon
-                className={`w-7 h-7 transition-colors ${
+                className={`w-8 h-8 transition-colors ${
                   isScrolled || !isHome ? "text-black" : "text-white"
                 }`}
                 aria-hidden="true"
