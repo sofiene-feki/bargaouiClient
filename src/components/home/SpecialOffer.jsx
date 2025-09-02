@@ -111,7 +111,7 @@ export default function SpecialOfferCard() {
   ).toFixed(2);
   const savings = +(originalPrice - discountedPrice).toFixed(2);
 
-  const BASE_URL = "http://localhost:8000"; // Change this to your real base URL
+  const BASE_URL = "https://bargaouiserver.onrender.com"; // Change this to your real base URL
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);

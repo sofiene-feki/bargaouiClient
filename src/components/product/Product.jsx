@@ -211,33 +211,15 @@ export default function Product({ product, productsPerPage, loading }) {
             </div>
 
             {/* Text Under Image */}
-            <div className="bg-white px-3 text-left ">
-              <div className="flex justify-between pb-1 items-center">
-                <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#87a736] transition-colors duration-300">
+            <div className="bg-white md:px-3 px-1 text-left">
+              <div className="flex justify-between items-center pb-1" dir="rtl">
+                <h3 className="md:text-lg truncate whitespace-nowrap text-base font-semibold text-gray-800 group-hover:text-[#87a736] transition-colors duration-300">
                   {product.Title}
                 </h3>
-                <p className="text-sm text-gray-500">{product.Price} DT</p>
+                <p className="text-sm text-gray-500 whitespace-nowrap">
+                  {product.Price} د.ت
+                </p>
               </div>
-
-              {/* <div className="flex gap-3 my-2">
-                {product.colors?.map((c, i) => (
-                  <div key={c.name || i} className="flex justify-center">
-                    <button
-                      style={{ backgroundColor: c.value ?? "#000" }}
-                      className={classNames(
-                        firstColor?.name === c.name
-                          ? "ring-2 ring-[#87a736] ring-offset-2"
-                          : "ring-1 ring-gray-300",
-                        "w-6 h-6 rounded-full border border-gray-200"
-                      )}
-                      // onClick={() => {
-                      //   setSelectedColor(c);
-                      //   if (c?.src) setSelectedMedia(c);
-                      // }}
-                    />
-                  </div>
-                ))}
-              </div> */}
             </div>
           </Link>
 
