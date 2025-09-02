@@ -126,7 +126,7 @@ export default function ProductDetails() {
       addItem({
         productId: product._id,
         name: product.Title,
-        price: selectedSize?.price ?? product.Price,
+        price: product.Price,
         image: selectedMedia?.src,
         selectedSize: selectedSize?.name ?? null,
         selectedSizePrice: selectedSize?.price ?? null,
@@ -178,7 +178,7 @@ export default function ProductDetails() {
     const formData = new FormData();
 
     formData.append("Title", product.Title);
-    formData.append("Price", Number(product.price));
+    formData.append("Price", Number(product.Price));
     formData.append("Promotion", Number(product.promotion));
     formData.append("Description", product.Description);
     formData.append("Category", product.category);
@@ -206,6 +206,7 @@ export default function ProductDetails() {
     });
 
     await productCreate(formData);
+    navigate("/shop");
   };
 
   const handleUpdate = async () => {
@@ -333,9 +334,9 @@ export default function ProductDetails() {
   };
 
   return (
-    <div className="py-4 md:py-10 px-4 sm:px-6 lg:px-8">
+    <div className="py-15 md:py-20 px-2 ">
       {user && (
-        <div className="flex  bg-white max-w-7xl mx-auto items-center justify-between border-b border-gray-200 pb-4 mb-6">
+        <div className="flex  bg-white max-w-7xl mx-auto items-center justify-between border-b border-gray-200 pb-2  mb-6">
           {/* Center title */}
           <h1 className="md:text-xl text-base font-semibold text-gray-800">
             {isCreate ? "Créer un produit" : isEdit ? "Modifier produit" : ""}
@@ -355,7 +356,7 @@ export default function ProductDetails() {
                       setCurrentMode("view");
                     }
                   }}
-                  className="flex items-center gap-1 md:px-4 px-2 md:py-2 py-1 
+                  className="flex md:text-base text-xs items-center gap-1 md:px-4 px-2 md:py-2 py-1 
                        bg-gray-200 text-gray-700 rounded-lg 
                        hover:bg-gray-300 transition 
                        focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400"
@@ -374,7 +375,7 @@ export default function ProductDetails() {
                       handleUpdate(); // 👉 update product
                     }
                   }}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600  
+                  className="flex md:text-base text-xs items-center md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 bg-green-50 text-green-600  
              focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-400 
              rounded-xl shadow-sm hover:bg-green-100 transition"
                 >
@@ -387,7 +388,7 @@ export default function ProductDetails() {
                 {/* Edit */}
                 <button
                   onClick={() => setCurrentMode("edit")}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 shadow-sm transition  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-400"
+                  className="flex items-center md:text-base text-xs md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 shadow-sm transition  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-400"
                 >
                   <HiOutlinePencil className="h-5 w-5" />
                   <span>Modifier</span>
@@ -396,7 +397,7 @@ export default function ProductDetails() {
                 {/* Delete */}
                 <button
                   onClick={handleDelete}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 shadow-sm transition  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400"
+                  className="flex items-center md:text-base text-xs md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 shadow-sm transition  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400"
                 >
                   <HiOutlineTrash className="h-5 w-5" />
                   <span>Supprimer</span>
@@ -442,9 +443,7 @@ export default function ProductDetails() {
                 <div className=" h-8 mb-2 w-1/4 bg-gray-200 rounded-lg animate-pulse"></div>
               ) : (
                 <p className="text-3xl md:flex border-b border-gray-200  justify-between font-bold break-words bg-clip-text drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] text-gray-900 mb-3">
-                  <span>
-                    {formatPrice(selectedSize?.price ?? product.Price)}
-                  </span>
+                  <span>{formatPrice(product.Price)}</span>
                   <span className="flex items-center gap-2">
                     {product.Quantity > 0 ? (
                       <span className="text-green-600 text-xs font-semibold">

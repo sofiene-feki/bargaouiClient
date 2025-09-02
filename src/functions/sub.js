@@ -1,17 +1,22 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = "https://bargaouiserver.onrender.com/api"; // Update if needed
 
-export const getSubs = async () => await axios.get(`${API_BASE_URL}/subs`);
+// Fetch subcategories by parent category
+export const getSubCategories = async (parentId) => {
+  return await axios.get(`${API_BASE_URL}/subs`, {
+    params: { parent: parentId }, // send parent id as query param
+  });
+};
 
-export const getSub = async (slug) =>
-  await axios.get(`${API_BASE_URL}/sub/${slug}`);
+// Create subcategory
+export const createSubCategory = async (subName, parentId) => {
+  return await axios.post(`${API_BASE_URL}/sub`, {
+    sub: { sub: subName, parent: parentId },
+  });
+};
 
-export const removeSub = async (slug, authtoken) =>
-  await axios.delete(`${API_BASE_URL}/sub/${slug}`, {});
-
-export const updateSub = async (slug, sub, authtoken) =>
-  await axios.put(`${API_BASE_URL}/sub/${slug}`, sub, {});
-
-export const createSub = async (sub, authtoken) =>
-  await axios.post(`${API_BASE_URL}/sub`, { sub });
+// Delete subcategory
+export const deleteSubCategory = async (id) => {
+  return await axios.delete(`${API_BASE_URL}/sub/${id}`);
+};

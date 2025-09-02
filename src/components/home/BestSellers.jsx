@@ -124,7 +124,7 @@ export default function NewArrivals() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-0 py-10 ">
+    <div className="mx-auto md:mx-18  px-0 py-10 ">
       <h2 className="text-2xl md:text-4xl font-serif text-center my-4">
         Artisanat Bargaoui Services
       </h2>

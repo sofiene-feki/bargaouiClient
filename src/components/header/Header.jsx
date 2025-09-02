@@ -10,6 +10,7 @@ import {
 } from "@headlessui/react";
 import {
   Bars3Icon,
+  MagnifyingGlassIcon,
   ShoppingBagIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -31,6 +32,7 @@ import {
   ChartBarIcon,
 } from "@heroicons/react/24/outline";
 import UserSettingsContent from "./userSettings";
+import UserSettingsLayout from "../UserSettings/UserSettingsLayout";
 
 const navigation = [
   { name: "Accueil", href: "/" },
@@ -147,7 +149,7 @@ export default function Header() {
                   onClose={() => setUserMenuOpen(false)}
                   position="right"
                 >
-                  <UserSettingsContent
+                  <UserSettingsLayout
                     setUserMenuOpen={setUserMenuOpen}
                     handleSignOut={handleSignOut}
                   />
@@ -275,6 +277,13 @@ export default function Header() {
             </CustomDialog>
 
             {/* Mobile Menu Button */}
+            <button>
+              <MagnifyingGlassIcon
+                className={`w-6 h-6 transition-colors ${
+                  isScrolled || !isHome ? "text-black" : "text-white"
+                }`}
+              />
+            </button>
             <button
               onClick={() => setMobileMenuOpen(true)}
               className="inline-flex items-center justify-center focus:outline-none"

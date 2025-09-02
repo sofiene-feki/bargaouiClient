@@ -184,7 +184,7 @@ const Order = () => {
 
   return (
     <div>
-      <div className="mx-auto max-w-7xl mx-auto md:py-8 py-4 px-1 md:px-4">
+      <div className="mx-auto max-w-7xl mx-auto py-15 md:py-20 px-1 md:px-4">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-gray-900">
           Suivi des commandes
         </h1>

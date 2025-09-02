@@ -20,6 +20,7 @@ export default function Home() {
     >
       <Banner />
       <NewArrivals />
+      <SpecialOffer />
       <Category />
       <BestSellers />
     </div>

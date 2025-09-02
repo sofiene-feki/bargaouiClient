@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Disclosure } from "@headlessui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaUserCircle,
   FaBoxOpen,
@@ -10,12 +10,18 @@ import {
   FaGoogle,
   FaEdit,
   FaLock,
+  FaPlus,
+  FaStore,
 } from "react-icons/fa";
 import { ChartBarIcon } from "@heroicons/react/24/outline";
 
 const UserSettingsContent = ({ setUserMenuOpen, handleSignOut }) => {
   const [view, setView] = useState("main"); // main | pixel | google | analytics
-
+  const navigate = useNavigate();
+  const handleCreateProduct = () => {
+    navigate("/product/new", { state: { mode: "create" } });
+    setUserMenuOpen(false);
+  };
   const goBack = () => setView("main");
 
   return (
@@ -28,6 +34,10 @@ const UserSettingsContent = ({ setUserMenuOpen, handleSignOut }) => {
               ? "Paramètres"
               : view === "pixel"
               ? "Configurer Facebook Pixel"
+              : view === "category"
+              ? "Configurer categorie"
+              : view === "sub category"
+              ? "Configurer sous category"
               : view === "google"
               ? "Configurer Google Search Console"
               : "Configurer Google Analytics"}
@@ -55,7 +65,7 @@ const UserSettingsContent = ({ setUserMenuOpen, handleSignOut }) => {
 
       {/* MAIN SETTINGS VIEW */}
       {view === "main" && (
-        <div className="space-y-3 pb-24">
+        <div className="space-y-3 pb-8">
           {/* Profile Section */}
           <Disclosure defaultOpen>
             {({ open }) => (
@@ -68,7 +78,6 @@ const UserSettingsContent = ({ setUserMenuOpen, handleSignOut }) => {
                   <ChevronIcon open={open} />
                 </Disclosure.Button>
                 <Disclosure.Panel className="px-4 py-3 text-gray-700 space-y-2">
-                  <p>admin@example.com</p>
                   <div className="flex flex-col gap-2">
                     <button className="flex items-center gap-2 text-gray-600 hover:underline text-left">
                       <FaEdit />
@@ -104,6 +113,42 @@ const UserSettingsContent = ({ setUserMenuOpen, handleSignOut }) => {
                     <FaBoxOpen />
                     Suivi des commandes
                   </Link>
+                </Disclosure.Panel>
+              </>
+            )}
+          </Disclosure>
+          {/* Shop Management Section */}
+          <Disclosure defaultOpen>
+            {({ open }) => (
+              <>
+                <Disclosure.Button className="flex justify-between items-center w-full px-4 py-2 text-left text-sm font-medium text-gray-800 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                  <span className="flex items-center gap-2">
+                    <FaStore className="w-5 h-5 text-yellow-500" />
+                    Gestion de la Boutique
+                  </span>
+                  <ChevronIcon open={open} />
+                </Disclosure.Button>
+                <Disclosure.Panel className="px-4 py-3 text-gray-700 space-y-2">
+                  <p
+                    className="flex items-center gap-2 text-gray-600 hover:underline cursor-pointer"
+                    onClick={handleCreateProduct}
+                  >
+                    <FaPlus /> Ajouter un Produit
+                  </p>
+                  <ServiceItem
+                    name="Ajouter une Catégorie"
+                    view="category"
+                    icon={<FaPlus />}
+                    color="text-blue-600"
+                    setView={setView}
+                  />
+                  <ServiceItem
+                    name="Ajouter une sous Catégorie"
+                    view="sub category"
+                    icon={<FaPlus />}
+                    color="text-blue-600"
+                    setView={setView}
+                  />
                 </Disclosure.Panel>
               </>
             )}
@@ -198,9 +243,11 @@ const UserSettingsContent = ({ setUserMenuOpen, handleSignOut }) => {
       {view === "pixel" && <PixelConfig />}
       {view === "google" && <GoogleConfig />}
       {view === "analytics" && <AnalyticsConfig />}
+      {view === "category" && <CategoryConfig />}
+      {view === "sub category" && <SubCategoryConfig />}
 
       {/* Sign Out Button */}
-      <div className="absolute bottom-4 left-0 w-full px-4">
+      <div className="p-4 ">
         <button
           onClick={handleSignOut}
           className="flex items-center justify-center gap-2 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
@@ -293,6 +340,41 @@ const AnalyticsConfig = () => (
     <div>
       <label className="block text-sm font-medium text-gray-700">
         Tracking ID (UA-XXXXX)
+      </label>
+      <input
+        type="text"
+        className="w-full border border-gray-300 rounded-lg p-2"
+        placeholder="Entrez votre Tracking ID"
+      />
+    </div>
+    <button className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">
+      Sauvegarder
+    </button>
+  </div>
+);
+
+const CategoryConfig = () => (
+  <div className="space-y-4">
+    <div>
+      <label className="block text-sm font-medium text-gray-700">
+        categorie
+      </label>
+      <input
+        type="text"
+        className="w-full border border-gray-300 rounded-lg p-2"
+        placeholder="Entrez votre Tracking ID"
+      />
+    </div>
+    <button className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700">
+      Sauvegarder
+    </button>
+  </div>
+);
+const SubCategoryConfig = () => (
+  <div className="space-y-4">
+    <div>
+      <label className="block text-sm font-medium text-gray-700">
+        sous categorie
       </label>
       <input
         type="text"

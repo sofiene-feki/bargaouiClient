@@ -20,10 +20,7 @@ export default function CheckoutPage() {
   const [isOpen, setIsOpen] = useState(false);
 
   const subtotal = cartItems.reduce(
-    (acc, item) =>
-      acc +
-      (item.selectedSizePrice != null ? item.selectedSizePrice : item.price) *
-        item.quantity,
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
 
@@ -126,7 +123,7 @@ export default function CheckoutPage() {
       </Transition>
 
       {/* Checkout Layout */}
-      <div className="max-w-7xl mx-auto p-2 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="max-w-7xl my-15 mx-auto p-2 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* ORDER FORM */}
         <div className="md:col-span-1 bg-white shadow-md p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">Informations de livraison</h2>
@@ -237,10 +234,7 @@ export default function CheckoutPage() {
                         </p>
                       )}
                       <p className="text-gray-800 font-semibold">
-                        {item.selectedSizePrice != null
-                          ? item.selectedSizePrice
-                          : item.price}{" "}
-                        DT
+                        {item.price} DT
                       </p>
                     </div>
                   </div>

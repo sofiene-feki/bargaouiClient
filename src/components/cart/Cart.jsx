@@ -185,10 +185,7 @@ export default function CartDrawer() {
                         </div>
 
                         <p className="text-base font-medium text-gray-900">
-                          {item.selectedSizePrice != null
-                            ? item.selectedSizePrice
-                            : item.price}{" "}
-                          DT
+                          {item.price} DT
                         </p>
                       </div>
                     </div>

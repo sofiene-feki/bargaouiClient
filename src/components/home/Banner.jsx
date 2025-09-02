@@ -45,7 +45,7 @@ export default function Banner() {
   ];
 
   return (
-    <div className="h-full mx-auto md:mx-10 shadow-xl  bg-white z-60">
+    <div className="h-full mx-auto md:mx-10  bg-transparent z-60">
       <Slider {...settings}>
         {slides.map((slide, index) => (
           <div key={index} className="relative w-full">
@@ -65,7 +65,7 @@ export default function Banner() {
               </h2>
 
               <Link to={slide.link}>
-                <button className="bg-white/30 hover:bg-white/50 text-black font-semibold px-4 py-2 rounded-xl flex items-center gap-2 transition">
+                <button className="flex bg-white/30 backdrop-blur-md text-white px-6 py-2  border border-white hover:bg-white/50 transition">
                   {slide.button} <ChevronDoubleRightIcon className="w-5 h-5" />
                 </button>
               </Link>

@@ -96,7 +96,7 @@ export default function Category() {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-0 py-0">
+    <section className="mx-auto md:mx-10  px-0 py-0">
       <h2 className="text-3xl md:text-4xl font-serif text-center my-4">
         Shop by Category
       </h2>

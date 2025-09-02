@@ -58,9 +58,7 @@ export default function Product({ product, productsPerPage, loading }) {
       );
     },
     appendDots: (dots) => (
-      <ul style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
-        {dots}
-      </ul>
+      <ul style={{ display: "flex", justifyContent: "center" }}>{dots}</ul>
     ),
   };
 
@@ -131,10 +129,10 @@ export default function Product({ product, productsPerPage, loading }) {
           <Link
             key={product._id}
             to={`/product/${product.slug}`}
-            className="group relative flex flex-col overflow-hidden   transition-transform transform hover:scale-105 hover:shadow-2xl"
+            className="group relative flex flex-col overflow-hidden   border border-gray-300 transition-transform transform hover:scale-105 hover:shadow-2xl"
           >
             {/* Product Image fills most of the card */}
-            <div className="w-full flex-1 overflow-hidden">
+            <div className="w-full flex-1 overflow-hidden bg-white">
               <Slider
                 {...{
                   dots: true,
@@ -150,8 +148,8 @@ export default function Product({ product, productsPerPage, loading }) {
                     <div
                       style={{
                         backgroundColor: "#fff",
-                        padding: "10px",
-                        marginBottom: "14px",
+                        padding: "4px",
+                        marginBottom: "4px",
                       }}
                     >
                       <ul
@@ -174,9 +172,9 @@ export default function Product({ product, productsPerPage, loading }) {
 
                     return (
                       <div
-                        className="custom-dot"
+                        className="custom-dot "
                         style={{
-                          width: "20px",
+                          width: "25px",
                           height: "4px",
                           borderRadius: "20%",
                           backgroundColor: bgColor,
@@ -194,7 +192,7 @@ export default function Product({ product, productsPerPage, loading }) {
                     <img
                       src={imageSrc}
                       alt={product.Title}
-                      className="w-full h-52 md:h-120 object-cover"
+                      className="w-full h-72 md:h-120 object-cover"
                     />
                   </div>
                 )}
@@ -205,7 +203,7 @@ export default function Product({ product, productsPerPage, loading }) {
                     <img
                       src={`https://bargaouiserver.onrender.com${color.src}`}
                       alt={color.name}
-                      className="w-full h-52 md:h-120 object-cover"
+                      className="w-full h-72 md:h-120 object-cover"
                     />
                   </div>
                 ))}
@@ -213,15 +211,13 @@ export default function Product({ product, productsPerPage, loading }) {
             </div>
 
             {/* Text Under Image */}
-            <div className="bg-white px-3 text-left">
-              <div className="flex justify-between items-center">
+            <div className="bg-white px-3 text-left ">
+              <div className="flex justify-between pb-1 items-center">
                 <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#87a736] transition-colors duration-300">
                   {product.Title}
                 </h3>
                 <p className="text-sm text-gray-500">{product.Price} DT</p>
               </div>
-
-              <div className="w-3 h-1 bg-green rounded-md"></div>
 
               {/* <div className="flex gap-3 my-2">
                 {product.colors?.map((c, i) => (
@@ -243,16 +239,17 @@ export default function Product({ product, productsPerPage, loading }) {
                 ))}
               </div> */}
             </div>
-            <button
-              onClick={handleAddToCart}
-              className="flex items-center justify-center border border-gray-800 gap-2 w-full px-2 py-2 mt-2
-          bg-white text-gray-800 font-semibold rounded-lg shadow-sm  md:text-base text-xs
-          hover:bg-[#87a736] hover:text-white transition duration-300 ease-in-out"
-            >
-              <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />
-              Ajouter au panier
-            </button>
           </Link>
+
+          <button
+            onClick={handleAddToCart}
+            className="flex items-center justify-center border border-gray-300 gap-2 w-full px-2 py-2 mt-1
+          bg-white text-gray-800 font-semibold  shadow-sm  md:text-base text-xs
+          hover:bg-[#87a736] hover:text-white transition duration-300 ease-in-out"
+          >
+            <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />
+            Ajouter au panier
+          </button>
         </div>
       )}
     </div>

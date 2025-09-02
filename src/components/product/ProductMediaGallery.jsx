@@ -29,7 +29,7 @@ export default function ProductMediaGallery({
             />
           )
         ) : (
-          <div className="flex flex-col items-center justify-center w-80 h-80 md:w-1/1 md:h-96 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl text-gray-400 text-center cursor-pointer hover:bg-gray-200 transition">
+          <div className="flex flex-col items-center justify-center w-full h-80 md:w-1/1 md:h-96 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl text-gray-400 text-center cursor-pointer hover:bg-gray-200 transition">
             <TbCameraPlus className="h-10 w-10 mb-2 text-gray-400" />
             <p>No media</p>
           </div>

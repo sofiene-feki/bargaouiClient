@@ -111,10 +111,27 @@ export default function SpecialOfferCard() {
   ).toFixed(2);
   const savings = +(originalPrice - discountedPrice).toFixed(2);
 
-  const BASE_URL = "https://supersiesta-server-i63m.onrender.com"; // Change this to your real base URL
+  const BASE_URL = "http://localhost:8000"; // Change this to your real base URL
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const allImages = product?.media || [];
+
+  const openModal = (index) => {
+    setCurrentIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => setIsModalOpen(false);
+
+  const nextImage = () =>
+    setCurrentIndex((prev) => (prev + 1) % allImages.length);
+  const prevImage = () =>
+    setCurrentIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
 
   return (
-    <div className="max-w-7xl h-auto mx-auto bg-white border border-gray-200 shadow-xl overflow-hidden flex flex-col md:flex-row hover:shadow-2xl transition-shadow duration-300 relative">
+    <div className=" h-auto  mx-auto md:mx-10 bg-white border border-gray-200 shadow-xl overflow-hidden flex flex-col md:flex-row hover:shadow-2xl transition-shadow duration-300 relative">
       {/* Discount Ribbon */}
       <div
         className="absolute top-4 left-4 text-white text-xs md:text-sm font-bold py-1 px-3 rounded-md shadow-lg z-10
@@ -125,29 +142,88 @@ export default function SpecialOfferCard() {
       </div>
 
       {/* Left Image Section */}
-      <div className="md:w-1/2 flex items-center justify-center h-56 sm:h-42 md:h-[300px] lg:h-[400px] relative">
-        {loading ? (
-          <div className=" h-full w-full bg-gray-200 rounded-lg animate-pulse"></div>
-        ) : (
-          <>
-            <div className="absolute top-0 left-0 w-full h-full  pointer-events-none z-20"></div>
+      <>
+        <div className="md:w-1/2 grid grid-cols-2 h-120 gap-2">
+          {/* Left column with 1 large image */}
+          <div className="grid grid-rows-1 gap-2 h-120">
+            {allImages.slice(0, 1).map((img, index) => (
+              <div
+                key={index}
+                className="overflow-hidden cursor-pointer"
+                onClick={() => openModal(index)}
+              >
+                <img
+                  src={`${BASE_URL}${img.src}`}
+                  alt={img.alt || product.Title || `Product Image ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Right column with 2 stacked images */}
+          <div className="grid grid-rows-2 gap-2 h-120">
+            {allImages.slice(1, 3).map((img, index) => (
+              <div
+                key={index}
+                className="relative overflow-hidden cursor-pointer"
+                onClick={() => openModal(index + 1)}
+              >
+                <img
+                  src={`${BASE_URL}${img.src}`}
+                  alt={img.alt || product.Title || `Product Image ${index + 2}`}
+                  className="w-full h-60 object-cover"
+                />
+
+                {/* Overlay if more images exist on the last visible image */}
+                {index === 1 && allImages.length > 3 && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-2xl font-bold">
+                    +{allImages.length - 3}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Full-screen Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+            <button
+              className="absolute top-5 right-5 text-white text-3xl font-bold"
+              onClick={closeModal}
+            >
+              &times;
+            </button>
+
+            {allImages.length > 1 && (
+              <>
+                <button
+                  className="absolute left-5 text-white text-4xl font-bold"
+                  onClick={prevImage}
+                >
+                  &#10094;
+                </button>
+                <button
+                  className="absolute right-5 text-white text-4xl font-bold"
+                  onClick={nextImage}
+                >
+                  &#10095;
+                </button>
+              </>
+            )}
+
             <img
-              src={
-                product?.media && product.media.length > 0
-                  ? `${BASE_URL}${product.media[0].src}`
-                  : "/default-placeholder.png"
-              }
-              alt={
-                product?.media?.[0]?.alt || product?.Title || "Product Image"
-              }
-              className="absolute inset-0 w-full h-full object-cover"
+              src={`${BASE_URL}${allImages[currentIndex].src}`}
+              alt={allImages[currentIndex].alt || product.Title}
+              className="max-h-[90vh] max-w-[90vw] object-contain"
             />
-          </>
+          </div>
         )}
-      </div>
+      </>
 
       {/* Right Info Section */}
-      <div className="md:w-1/2 flex  flex-col justify-between p-2 md:p-4 bg-gray-100">
+      <div className="md:w-1/2 flex  flex-col justify-between p-2 md:p-4 ">
         {/* Header */}
         <div className="space-y-1 md:space-y-3">
           <div className="flex justify-between items-start">

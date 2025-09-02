@@ -65,9 +65,7 @@ export default function Header({
   setMobileFiltersOpen,
 }) {
   const dispatch = useDispatch();
-  const handleCreateProduct = () => {
-    navigate("/product/new", { state: { mode: "create" } });
-  };
+
   const view = useSelector((state) => state.view.view);
   const filter = useSelector((state) => state.view.view);
 
@@ -201,18 +199,6 @@ export default function Header({
               </div>
             </MenuItems>
           </Menu>
-          {user && (
-            <button
-              onClick={handleCreateProduct}
-              className="inline-flex items-center gap-2 px-2 md:px-2 py-2 
-                bg-green-50 text-green-700 
-                rounded-xl shadow-sm text-xs md:text-base
-                hover:bg-green-100 transition"
-            >
-              <PlusIcon className="w-4 h-4" />
-              Créer un produit
-            </button>
-          )}
         </div>
       </div>
     </div>

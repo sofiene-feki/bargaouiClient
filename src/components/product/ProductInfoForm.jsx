@@ -1,8 +1,47 @@
 // ProductInfoForm.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input, Textarea } from "../ui";
+import { getCategories } from "../../functions/Categories";
+import { getSubCategories } from "../../functions/sub";
 
 export default function ProductInfoForm({ product, setProduct }) {
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [loadingSubs, setLoadingSubs] = useState(false);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des catégories", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Fetch subcategories whenever product.category changes
+  useEffect(() => {
+    const fetchSubs = async () => {
+      if (!product.category) {
+        setSubCategories([]);
+        return;
+      }
+      setLoadingSubs(true);
+      try {
+        const { data } = await getSubCategories(product.category);
+        setSubCategories(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des sous-catégories", error);
+      } finally {
+        setLoadingSubs(false);
+      }
+    };
+    fetchSubs();
+  }, [product.category]);
+
   return (
     <>
       <Input
@@ -14,6 +53,7 @@ export default function ProductInfoForm({ product, setProduct }) {
         placeholder="Product Name"
         className="border w-full mb-4 p-1"
       />
+
       <div className="flex gap-2 ">
         <Input
           label="Price"
@@ -42,6 +82,7 @@ export default function ProductInfoForm({ product, setProduct }) {
           className="border w-full mb-4 p-1"
         />
       </div>
+
       <div className="flex gap-2 ">
         <Input
           label="Quantity"
@@ -57,7 +98,7 @@ export default function ProductInfoForm({ product, setProduct }) {
           className="border w-full mb-4 p-1"
         />
         <Input
-          label="sold"
+          label="Sold"
           type="number"
           value={product.sold ?? 0}
           onChange={(e) =>
@@ -66,7 +107,7 @@ export default function ProductInfoForm({ product, setProduct }) {
               sold: e.target.value === "" ? 0 : Number(e.target.value),
             })
           }
-          placeholder="sold"
+          placeholder="Sold"
           className="border w-full mb-4 p-1"
         />
       </div>
@@ -80,51 +121,50 @@ export default function ProductInfoForm({ product, setProduct }) {
         placeholder="Description"
         className="border w-full p-2 mb-4"
       />
+
+      {/* Category Select */}
       <label className="block text-sm font-medium text-gray-700 mb-1">
         Category
       </label>
       <select
-        value={product.Category}
-        onChange={(e) => setProduct({ ...product, category: e.target.value })}
-        className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder-gray-400
+        value={product.category || ""}
+        onChange={(e) =>
+          setProduct({ ...product, category: e.target.value, subCategory: "" })
+        }
+        className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm
              focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none
              transition mb-4"
       >
         <option value="">Select category</option>
-        <option value="soft+">soft+</option>
-        <option value="venise+">venise+</option>
-        <option value="medico+">medico+</option>
-        <option value="relax+">relax+</option>
-        <option value="tendresse+">tendresse+</option>
-        <option value="topRelax+">topRelax+</option>
-        <option value="oreiller">oreiller</option>
-        <option value="protege">protege</option>
-
-        {/* Add more categories as needed */}
+        {categories.map((cat) => (
+          <option key={cat._id} value={cat._id}>
+            {cat.name}
+          </option>
+        ))}
       </select>
+
+      {/* Sub Category Select */}
       <label className="block text-sm font-medium text-gray-700 mb-1">
         Sub Category
       </label>
       <select
-        value={product.subCategory}
+        value={product.subCategory || ""}
         onChange={(e) =>
           setProduct({ ...product, subCategory: e.target.value })
         }
-        className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder-gray-400
+        disabled={!product.category || loadingSubs}
+        className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm
              focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none
-             transition mb-4"
+             transition mb-4 disabled:bg-gray-100 disabled:text-gray-400"
       >
-        <option value="">Select category</option>
-        <option value="soft+">soft+</option>
-        <option value="venise+">venise+</option>
-        <option value="medico+">medico+</option>
-        <option value="relax+">relax+</option>
-        <option value="tendresse+">tendresse+</option>
-        <option value="topRelax+">topRelax+</option>
-        <option value="oreiller">oreiller</option>
-        <option value="protege">protege</option>
-
-        {/* Add more categories as needed */}
+        <option value="">
+          {loadingSubs ? "Loading..." : "Select sub category"}
+        </option>
+        {subCategories.map((sub) => (
+          <option key={sub._id} value={sub._id}>
+            {sub.name}
+          </option>
+        ))}
       </select>
     </>
   );
