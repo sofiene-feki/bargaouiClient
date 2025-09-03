@@ -13,7 +13,7 @@ export default function Home() {
     <div
       className="bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: `url(${bg})`,
+        // backgroundImage: `url(${bg})`,
         backgroundColor: "#fff", // fallback color
         backgroundAttachment: "fixed", // makes background fixed
       }}

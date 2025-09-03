@@ -28,19 +28,19 @@ export default function Banner() {
       title: "For Men",
       img: men,
       button: "Learn More",
-      link: "/about",
+      link: "/shop",
     },
     {
       title: "For Women",
       img: women,
       button: "Explore",
-      link: "/products",
+      link: "/shop",
     },
     {
       title: "For kid's",
       img: kid,
       button: "Contact Us",
-      link: "/contact",
+      link: "/shop",
     },
   ];
 

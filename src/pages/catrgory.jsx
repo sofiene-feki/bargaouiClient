@@ -53,7 +53,7 @@ export default function Category() {
       setLoading(true);
       try {
         const data = await getProductsByCategory({
-          category: Category,
+          Category: Category,
           page: currentPage,
           itemsPerPage: productsPerPage,
           sort: sortOption,
