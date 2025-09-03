@@ -510,7 +510,7 @@ export default function ProductDetails() {
                       "border rounded-md px-2 py-2 text-xs font-medium hover:border-[#87a736]"
                     )}
                   >
-                    {s.name} - {s.price ?? product.price} DT
+                    {s.name}
                   </button>
                 ))}
               </div>
