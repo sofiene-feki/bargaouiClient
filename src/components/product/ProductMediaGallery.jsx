@@ -51,7 +51,7 @@ export default function ProductMediaGallery({
             <img
               src={selectedMedia.src}
               alt={selectedMedia.alt}
-              className="w-full h-auto  max-h-[500px] object-cover rounded-lg shadow-md"
+              className="w-full h-full  max-h-[500px] object-cover rounded-lg shadow-md"
             />
           ) : (
             <video
