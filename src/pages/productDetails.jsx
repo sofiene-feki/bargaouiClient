@@ -186,7 +186,9 @@ export default function ProductDetails() {
     formData.append("Quantity", product.Quantity);
     formData.append("sold", product.sold);
 
-    // Prepare colors without src (server will set it)
+    // -------------------------
+    // Colors
+    // -------------------------
     const colorsPayload = product.colors.map((c) => ({
       name: c.name,
       value: c.value,
@@ -195,17 +197,33 @@ export default function ProductDetails() {
     }));
     formData.append("colors", JSON.stringify(colorsPayload));
 
-    // Append files for each color
     product.colors.forEach((c) => {
       if (c.file) formData.append("colorFiles", c.file);
     });
 
-    // Append media files if any
+    // -------------------------
+    // Sizes (MISSING in your code before)
+    // -------------------------
+    if (Array.isArray(product.sizes)) {
+      product.sizes.forEach((s, i) => {
+        if (s.name) formData.append(`sizes[${i}][name]`, s.name);
+        if (s.price !== undefined)
+          formData.append(`sizes[${i}][price]`, Number(s.price));
+      });
+    }
+
+    // -------------------------
+    // Media
+    // -------------------------
     product.media?.forEach((m) => {
       if (m.file) formData.append("mediaFiles", m.file);
     });
 
+    // -------------------------
+    // Send
+    // -------------------------
     await productCreate(formData);
+    console.log("📦 Create payload:", [...formData.entries()]);
     navigate("/shop");
   };
 
@@ -324,34 +342,17 @@ export default function ProductDetails() {
     }
     navigate("/shop"); // redirect to shop page
   };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("fr-TN", {
       style: "currency",
       currency: "TND",
       minimumFractionDigits: 3,
-    })
-      .format(price)
-      .replace(/\b(TND|DT)\b/g, "د.ت");
+    }).format(price);
   };
-  const [shrink, setShrink] = useState(false);
-
-  useEffect(() => {
-    let lastShrink = false;
-
-    const handleScroll = () => {
-      const shouldShrink = window.scrollY > 0; // start shrinking immediately
-      if (shouldShrink !== lastShrink) {
-        setShrink(shouldShrink);
-        lastShrink = shouldShrink;
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
-    <div className="py-12 md:py-20 ">
+    <div className="py-15 md:py-20 px-2 ">
       {user && (
         <div className="flex  bg-white max-w-7xl mx-auto items-center justify-between border-b border-gray-200 pb-2  mb-6">
           {/* Center title */}
@@ -424,96 +425,116 @@ export default function ProductDetails() {
           </div>
         </div>
       )}
-      <div className="max-w-7xl mx-auto lg:flex lg:gap-12 ">
+      <div className="max-w-7xl mx-auto lg:flex lg:gap-12">
         {/* LEFT: Media gallery */}
         {loading ? (
           <div className=" w-full h-[400px] lg:w-1/2 md:mb-6  lg:mb-0 bg-gray-200 rounded-lg animate-pulse"></div>
         ) : (
-          <div className={` sticky top-12 z-10 `}>
-            {" "}
-            <ProductMediaGallery
-              media={product?.media}
-              selectedMedia={selectedMedia}
-              onSelectMedia={setSelectedMedia}
-              onAddMedia={handleFileUpload}
-              onDeleteMedia={deleteMedia}
-              isEditable={isEdit || isCreate}
-              shrink={shrink}
-              minHeight={250}
-              maxHeight={500}
-            />
-          </div>
+          <ProductMediaGallery
+            media={product?.media} // pass media array directly
+            selectedMedia={selectedMedia} // currently selected
+            onSelectMedia={setSelectedMedia} // when clicking thumbnail
+            onAddMedia={handleFileUpload} // upload handler
+            onDeleteMedia={deleteMedia} // delete handler
+            isEditable={isEdit || isCreate} // edit/create flag
+          />
         )}
 
         {/* RIGHT: Product Info */}
-        <div className="w-full lg:w-1/2 mt-[30px] lg:mt-0 px-2" dir="rtl">
-          {/* Name, Price, Description */}
+        <div className="w-full lg:w-1/2  lg:mt-0">
+          {/* Title & Price */}
           {isEdit || isCreate ? (
             <>
               <ProductInfoForm product={product} setProduct={setProduct} />
             </>
           ) : (
             <>
-              <div className=" sticky md:static top-[370px] shadow-xl z-10 bg-white">
-                {" "}
-                {loading ? (
-                  <div className=" h-8 mb-2 w-3/4 bg-gray-200 rounded-lg animate-pulse"></div>
-                ) : (
-                  <h1 className="text-2xl  break-words bg-clip-text  drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] font-bold text-gray-900 sm:text-3xl">
-                    {product.Title}
-                  </h1>
-                )}
-                {loading ? (
-                  <div className=" h-8 mb-2 w-1/4 bg-gray-200 rounded-lg animate-pulse"></div>
-                ) : (
-                  <p className="text-xl flex border-b border-gray-200 mb-5 justify-between font-bold break-words bg-clip-text drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] text-gray-900">
-                    <span>{formatPrice(product.Price)}</span>
-                    <span className="flex items-start mt-2 gap-2">
-                      {product.Quantity > 0 ? (
-                        <span className="text-green-600 text-xs font-semibold">
-                          En stock
-                        </span>
-                      ) : (
-                        <span className="text-red-500 text-xs line-through">
-                          Rupture de stock
-                        </span>
-                      )}
-                      <FaShippingFast className="text-[#2c2d84] md:w-6 md:h-6 w-4 h-4" />
-                      <span className="text-xs text-[#2c2d84]">
-                        Livraison rapide
-                      </span>
-                    </span>
-                  </p>
-                )}
-              </div>
+              {loading ? (
+                <div className="h-8 mb-2 w-3/4 bg-gray-200 rounded-lg animate-pulse"></div>
+              ) : (
+                <h1 className="text-2xl break-words bg-clip-text drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] font-bold text-gray-900 sm:text-3xl mb-2">
+                  {product.Title}
+                </h1>
+              )}
 
-              <div className="mb-4">
-                {" "}
-                <h3 className="font-semibold  break-words bg-clip-text  drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                  Description :
-                </h3>
-                {loading ? (
-                  <div className=" h-16 md:h-24 mb-2  w-full bg-gray-200 rounded-lg animate-pulse"></div>
-                ) : (
-                  <p
-                    className=" text-[16px] text-gray-500 whitespace-pre-line"
-                    dangerouslySetInnerHTML={{
-                      __html: FormatDescription(product.Description),
-                    }}
-                  />
-                )}
-              </div>
+              {loading ? (
+                <div className="h-8 mb-2 w-1/4 bg-gray-200 rounded-lg animate-pulse"></div>
+              ) : (
+                <p className="text-3xl flex border-b border-gray-200 justify-between font-bold break-words bg-clip-text drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] text-gray-900 mb-3">
+                  <span>{formatPrice(product.Price)}</span>
+                  <span className="flex items-center gap-2">
+                    {product.Quantity > 0 ? (
+                      <span className="text-green-600 text-xs font-semibold">
+                        En stock
+                      </span>
+                    ) : (
+                      <span className="text-red-500 text-xs line-through">
+                        Rupture de stock
+                      </span>
+                    )}
+                    <FaShippingFast className="text-[#2c2d84] md:w-6 md:h-6 w-5 h-5 ml-3" />
+                    <span className="text-xs text-[#2c2d84]">
+                      Livraison rapide
+                    </span>
+                  </span>
+                </p>
+              )}
             </>
           )}
+
+          {/* Colors */}
+          <div className="mb-6">
+            {product?.colors && product.colors.length > 0 && (
+              <h3 className="font-semibold mb-1">Couleurs</h3>
+            )}
+            {isEdit || isCreate ? (
+              <ProductColorsEditor
+                product={product}
+                setProduct={setProduct}
+                handleChangeProduct={handleChangeProduct}
+              />
+            ) : loading ? (
+              <div className="h-16 w-full bg-gray-200 rounded-lg animate-pulse"></div>
+            ) : (
+              <div className="flex gap-3 mt-2">
+                {product.colors?.map((c, i) => (
+                  <button
+                    key={i}
+                    className={classNames(
+                      selectedColor?.name === c.name
+                        ? "ring-2 ring-[#87a736] ring-offset-2"
+                        : "ring-1 ring-gray-300",
+                      "md:w-16 md:h-16 w-16 h-16 rounded-full border overflow-hidden"
+                    )}
+                    style={{ borderColor: c.value ?? "#000" }}
+                    onClick={() => {
+                      setSelectedColor(c);
+                      if (c?.src) setSelectedMedia(c);
+                    }}
+                  >
+                    {c.src ? (
+                      <img
+                        src={c.src}
+                        alt={c.alt || c.name}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full rounded-full"
+                        style={{ backgroundColor: c.value ?? "#000" }}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Sizes */}
           <div className="mb-4">
             {product?.sizes && product.sizes.length > 0 && (
-              <h3 className="font-semibold  break-words bg-clip-text  drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] mb-1">
-                Tailles & Prix
-              </h3>
+              <h3 className="font-semibold mb-1">Tailles & Prix</h3>
             )}
-            <h3 className="font-semibold  break-words bg-clip-text  drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]  mb-1"></h3>
             {isEdit || isCreate ? (
               <ProductSizesEditor
                 product={product}
@@ -542,43 +563,22 @@ export default function ProductDetails() {
             )}
           </div>
 
-          {/* Colors */}
-          <div className="mb-6">
-            {product?.colors && product.colors.length > 0 && (
-              <h3 className="font-semibold  break-words bg-clip-text  drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] mb-1">
-                Couleurs
-              </h3>
-            )}
-
-            {isEdit || isCreate ? (
-              <ProductColorsEditor
-                product={product}
-                setProduct={setProduct}
-                handleChangeProduct={handleChangeProduct}
-              />
-            ) : loading ? (
-              <div className="h-16 w-full bg-gray-200 rounded-lg animate-pulse"></div>
-            ) : (
-              <div className="flex gap-3 mt-2">
-                {product.colors?.map((c, i) => (
-                  <button
-                    key={i}
-                    style={{ backgroundColor: c.value ?? "#000" }}
-                    className={classNames(
-                      selectedColor?.name === c.name
-                        ? "ring-2 ring-[#87a736] ring-offset-2"
-                        : "ring-1 ring-gray-300",
-                      "w-8 h-8 rounded-full border border-gray-200"
-                    )}
-                    onClick={() => {
-                      setSelectedColor(c); // select color
-                      if (c?.src) setSelectedMedia(c); // update gallery to color image
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Description */}
+          {!(isEdit || isCreate) && (
+            <div className="mb-4">
+              <h3 className="font-semibold mb-1">Description :</h3>
+              {loading ? (
+                <div className="h-16 md:h-24 mb-2 w-full bg-gray-200 rounded-lg animate-pulse"></div>
+              ) : (
+                <p
+                  className="text-[16px] text-gray-500 whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: FormatDescription(product.Description),
+                  }}
+                />
+              )}
+            </div>
+          )}
 
           {/* Add to Cart */}
           {isView && (

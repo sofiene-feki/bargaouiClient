@@ -33,6 +33,7 @@ import {
 } from "@heroicons/react/24/outline";
 import UserSettingsContent from "./userSettings";
 import UserSettingsLayout from "../UserSettings/UserSettingsLayout";
+import Search from "./Search";
 
 const navigation = [
   { name: "Accueil", href: "/" },
@@ -50,13 +51,9 @@ export default function Header() {
   const currentPath = location.pathname;
   const totalQty = useSelector((state) => state.cart.totalQuantity);
   const dispatch = useDispatch();
-  const [user, setUser] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [view, setView] = useState("main"); // 'main' | 'pixel' | 'google'
-
-  const goBack = () => setView("main");
+  const [serarchMenuOpen, setSearchMenuOpen] = useState(false);
 
   const { userInfo, isAuthenticated } = useSelector((state) => state.user);
   const userNavigation = [
@@ -232,7 +229,7 @@ export default function Header() {
                           alt="Imprimante"
                           className="w-5 h-5"
                         />
-                        Imprimantes
+                        Homme
                       </a>
                     </li>
                     <li>
@@ -245,7 +242,7 @@ export default function Header() {
                           alt="Photocopieur"
                           className="w-5 h-5"
                         />
-                        Photocopieurs
+                        Femme
                       </a>
                     </li>
                     <li>
@@ -258,7 +255,7 @@ export default function Header() {
                           alt="Consommable"
                           className="w-5 h-5"
                         />
-                        Consommables
+                        Enfants
                       </a>
                     </li>
                   </ul>
@@ -276,8 +273,16 @@ export default function Header() {
               </nav>
             </CustomDialog>
 
+            <CustomDialog
+              open={serarchMenuOpen}
+              onClose={() => setSearchMenuOpen(false)}
+              position="right"
+            >
+              <Search onClose={() => setSearchMenuOpen(false)} />
+            </CustomDialog>
+
             {/* Mobile Menu Button */}
-            <button>
+            <button onClick={() => setSearchMenuOpen(true)}>
               <MagnifyingGlassIcon
                 className={`w-6 h-6 transition-colors ${
                   isScrolled || !isHome ? "text-black" : "text-white"

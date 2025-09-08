@@ -63,68 +63,15 @@ export default function NewArrivals() {
     fetchNewArrivals();
   }, []);
 
-  const desktopSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    arrows: true,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-  };
-
-  const mobileSettings = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1.2,
-    slidesToScroll: 1,
-    arrows: false,
-    swipeToSlide: true,
-    centerMode: false,
-  };
-
-  const newCollection = [
-    {
-      _id: 1,
-      title: "Elegant Vase",
-      image: new1,
-      price: 45,
-      slug: "elegant-vase",
-    },
-    {
-      _id: 2,
-      title: "Handmade Basket",
-      image: women,
-      price: 30,
-      slug: "handmade-basket",
-    },
-    {
-      _id: 3,
-      title: "Decorative Lamp",
-      image: new2,
-      price: 75,
-      slug: "decorative-lamp",
-    },
-    {
-      _id: 4,
-      title: "Artisan Plate",
-      image: new3,
-      price: 25,
-      slug: "artisan-plate",
-    },
-  ];
-
   return (
     <div className=" mx-auto md:mx-10 py-10">
       <h2 className="text-3xl md:text-4xl font-bold font-serif  text-gray-800 my-4 text-center">
-        New Collection 2025
+        Nouvelle Collection 2025
       </h2>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-1">
         {products.map((product) => (
-          <Product product={product} />
+          <Product key={product._id || product.slug} product={product} />
         ))}
       </div>
     </div>

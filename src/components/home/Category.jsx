@@ -20,7 +20,7 @@ const categories = [
   {
     name: "Women",
     image: women,
-    link: "/category/women",
+    link: "/category/femme",
   },
   {
     name: "Men",

@@ -19,10 +19,6 @@ export default function ProductMediaGallery({
   onAddMedia,
   onDeleteMedia,
   isEditable = false,
-  height,
-  minHeight,
-  maxHeight,
-  shrink,
 }) {
   const fileInputRef = useRef(null);
 
@@ -68,41 +64,21 @@ export default function ProductMediaGallery({
   const showArrows = media.length > (isMobile ? 4 : 6);
 
   return (
-    <div className="md:mb-6 mb-3 lg:mb-0 bg-white">
+    <div className="w-full lg:w-1/2 md:mb-6 lg:mb-0">
       {/* Main Media */}
       <div className="mb-4">
         {selectedMedia ? (
           selectedMedia.type === "image" ? (
-            <div
-              className="w-full relative flex items-center justify-center  shadow-md overflow-hidden"
-              style={{
-                backgroundImage: `url(${selectedMedia.src})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }}
-            >
-              {/* Blurred background */}
-              <div className="absolute inset-0 backdrop-blur-2xl brightness-110"></div>
-
-              {/* Gradient fade overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/20"></div>
-
-              {/* Foreground product image */}
-              <img
-                src={selectedMedia.src}
-                alt={selectedMedia.alt}
-                className="relative z-10 w-full h-auto object-contain "
-                style={{
-                  maxHeight: `${shrink ? minHeight : maxHeight}px`,
-                }}
-              />
-            </div>
+            <img
+              src={selectedMedia.src}
+              alt={selectedMedia.alt}
+              className="w-full h-full  max-h-[500px] object-cover rounded-lg shadow-md"
+            />
           ) : (
             <video
               src={selectedMedia.src}
               controls
-              className="w-full h-auto  shadow-md"
+              className="w-full h-auto rounded-lg shadow-md"
             />
           )
         ) : (
@@ -112,37 +88,23 @@ export default function ProductMediaGallery({
           </div>
         )}
       </div>
-
       {/* Thumbnails */}
       {/* Thumbnails Slider */}
-      <div
-        className={`relative px-2 transition-transform duration-500 ease-in-out`}
-        style={{
-          transform: shrink ? "scale(0.85)" : "scale(1)", // shrink thumbnails together
-          transformOrigin: "top center",
-        }}
-      >
+      <div className="relative">
         {/* Scrollable container */}
         <div
           ref={thumbRef}
           className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth"
         >
           {media.map((mediaItem, idx) => (
-            <div
-              key={idx}
-              className="relative flex-shrink-0 transition-all duration-500 ease-in-out"
-            >
+            <div key={idx} className="relative flex-shrink-0">
               <button
                 onClick={() => onSelectMedia(mediaItem)}
-                className={`relative md:w-20 md:h-20 w-16 h-16 border-2 rounded-md overflow-hidden transition-all duration-500 ease-in-out ${
+                className={`relative md:w-20 md:h-20 w-16 h-16 border-2 rounded-md overflow-hidden ${
                   selectedMedia?.src === mediaItem.src
                     ? "border-[#87a736]"
                     : "border-gray-300"
                 }`}
-                style={{
-                  width: shrink ? "3.8rem" : "4rem", // md: w-16 or 20 scaled
-                  height: shrink ? "3.8rem" : "4rem",
-                }}
               >
                 {mediaItem.type === "image" ? (
                   <img
@@ -170,7 +132,12 @@ export default function ProductMediaGallery({
               {isEditable && (
                 <button
                   onClick={() => onDeleteMedia(idx)}
-                  className="absolute top-1 right-1 bg-red-50 rounded-full p-1.5 shadow-sm text-red-500 hover:bg-red-90 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400"
+                  className="absolute top-1 right-1 
+              bg-red-50 rounded-full p-1.5 
+              shadow-sm text-red-500 
+              hover:bg-red-90 
+              transition-colors
+              focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400"
                 >
                   <TrashIcon className="h-4 w-4" />
                 </button>
@@ -178,59 +145,97 @@ export default function ProductMediaGallery({
             </div>
           ))}
 
-          {/* Add Media Button */}
           {isEditable && (
-            <Menu as="div" className="flex-shrink-0">
-              <MenuButton
-                className="relative flex flex-col items-center justify-center w-16 h-16 md:w-20 md:h-20 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-all duration-500 ease-in-out"
-                style={{
-                  width: shrink ? "3rem" : "4rem",
-                  height: shrink ? "3rem" : "4rem",
-                }}
-              >
-                <div className="flex flex-col items-center justify-center text-gray-500">
-                  <TbCameraPlus className="h-6 w-6 text-indigo-500" />
-                  <span className="md:text-[10px] text-[8px] text-gray-400 text-center ">
-                    Image / Vidéo
-                  </span>
-                </div>
-              </MenuButton>
+            <>
+              <Menu as="div" className="flex-shrink-0">
+                <MenuButton className="relative flex flex-col items-center justify-center w-16 h-16 md:w-20 md:h-20 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition">
+                  <div className="flex flex-col items-center justify-center text-gray-500">
+                    <TbCameraPlus className="h-6 w-6 text-indigo-500" />
+                    <span className="md:text-[10px] text-[8px] text-gray-400 text-center ">
+                      Image / Vidéo
+                    </span>
+                  </div>
+                </MenuButton>
 
-              <MenuItems
-                transition
-                anchor="bottom end"
-                className="w-52 origin-top-right rounded-xl border border-white/5 bg-gray-50 p-1 text-sm/6 text-gray-600 transition duration-100 ease-out focus:outline-none"
-              >
-                <MenuItem
-                  as="button"
-                  onClick={() => setOpen(true)}
-                  className="group flex w-full items-center gap-2 rounded-lg px-3 py-1.5 hover:bg-white"
+                <MenuItems
+                  transition
+                  anchor="bottom end"
+                  className="w-52 origin-top-right rounded-xl border border-white/5 bg-gray-50 p-1 text-sm/6 text-gray-600 transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95 data-closed:opacity-0"
                 >
-                  <FaRegImage />
-                  Choisir une photo
-                </MenuItem>
+                  <MenuItem
+                    as="button"
+                    onClick={() => setOpen(true)}
+                    className="group flex w-full items-center gap-2 rounded-lg px-3 py-1.5 hover:bg-white"
+                  >
+                    <FaRegImage />
+                    Choisir une photo
+                  </MenuItem>
 
-                <MenuItem
-                  as="button"
-                  className="group flex w-full items-center gap-2 rounded-lg px-3 py-1.5"
-                  onClick={handleFileClick}
-                >
-                  <FaUpload />
-                  Importer une photo
-                </MenuItem>
-              </MenuItems>
-            </Menu>
+                  <MenuItem
+                    as="button"
+                    className="group flex w-full items-center gap-2 rounded-lg px-3 py-1.5"
+                    onClick={handleFileClick}
+                  >
+                    <FaUpload />
+                    Importer une photo
+                  </MenuItem>
+                </MenuItems>
+              </Menu>
+
+              <CustomModal
+                open={open}
+                setOpen={setOpen}
+                title="Importer une photo"
+                message={
+                  <div className="grid grid-cols-3 gap-4">
+                    {mediaGallery.map((url, i) => (
+                      <div key={i} className="relative w-full h-40">
+                        {url.match(/\.(mp4|mov|m4v)$/i) ? (
+                          <video
+                            src={url}
+                            controls
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img
+                            src={url}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                        <button
+                          onClick={() => handleDelete(url)}
+                          className="absolute top-1 right-1 bg-red-500 text-white px-2 py-1 text-xs rounded"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                }
+              />
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,video/*,.mov,.mp4,.m4v"
+                onChange={onAddMedia}
+                className="hidden"
+              />
+            </>
           )}
         </div>
 
-        {/* Scroll Arrows */}
+        {/* Arrows (show only if overflow) */}
         {media.length > (window.innerWidth < 768 ? 4 : 6) && (
           <>
             <button
               onClick={() =>
                 thumbRef.current.scrollBy({ left: -150, behavior: "smooth" })
               }
-              className="absolute top-1/2 left-2 -translate-y-1/2 z-20 bg-white/50 rounded-full p-2 shadow-xl hover:bg-gray-100 transition flex items-center justify-center"
+              className="absolute top-1/2 left-2 -translate-y-1/2 z-20 
+                 bg-white/50 rounded-full p-2 shadow-xl hover:bg-gray-100 
+                 transition flex items-center justify-center"
             >
               <ChevronLeftIcon className="w-3 h-3 text-gray-700" />
             </button>
@@ -238,13 +243,16 @@ export default function ProductMediaGallery({
               onClick={() =>
                 thumbRef.current.scrollBy({ left: 150, behavior: "smooth" })
               }
-              className="absolute top-1/2 right-2 -translate-y-1/2 z-20 bg-white/50 rounded-full p-2 shadow-xl hover:bg-gray-100 transition flex items-center justify-center"
+              className="absolute top-1/2 right-2 -translate-y-1/2 z-20 
+                 bg-white/50 rounded-full p-2 shadow-xl hover:bg-gray-100 
+                 transition flex items-center justify-center"
             >
               <ChevronRightIcon className="w-3 h-3 text-gray-700" />
             </button>
           </>
         )}
       </div>
+         
     </div>
   );
 }

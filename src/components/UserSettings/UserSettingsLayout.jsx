@@ -7,6 +7,7 @@ import AnalyticsConfig from "./configs/AnalyticsConfig";
 import CategoryConfig from "./configs/CategoryConfig";
 import SubCategoryConfig from "./configs/SubCategoryConfig";
 import { FaReply } from "react-icons/fa";
+import PackageConfig from "./configs/PackageConfig";
 
 const VIEWS = {
   MAIN: "main",
@@ -15,6 +16,7 @@ const VIEWS = {
   ANALYTICS: "analytics",
   CATEGORY: "category",
   SUB_CATEGORY: "sub_category",
+  package: "package",
 };
 
 const CONFIG_COMPONENTS = {
@@ -23,6 +25,7 @@ const CONFIG_COMPONENTS = {
   [VIEWS.ANALYTICS]: AnalyticsConfig,
   [VIEWS.CATEGORY]: CategoryConfig,
   [VIEWS.SUB_CATEGORY]: SubCategoryConfig,
+  [VIEWS.package]: PackageConfig,
 };
 
 export default function UserSettingsLayout({ setUserMenuOpen, handleSignOut }) {

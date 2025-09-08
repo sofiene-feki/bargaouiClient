@@ -7,7 +7,7 @@ export default function ProfileSection() {
   return (
     <Disclosure defaultOpen>
       {({ open }) => (
-        <>
+        <div>
           <Disclosure.Button className="flex justify-between items-center w-full px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <span className="flex items-center gap-2 font-medium">
               <FaUserCircle className="text-blue-500" /> Profil Utilisateur
@@ -22,7 +22,7 @@ export default function ProfileSection() {
               <FaLock /> Changer le Mot de Passe
             </button>
           </Disclosure.Panel>
-        </>
+        </div>
       )}
     </Disclosure>
   );

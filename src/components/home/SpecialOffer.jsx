@@ -229,14 +229,10 @@ export default function SpecialOfferCard() {
           <div className="flex justify-between items-start">
             {/* Title + Price */}
             <div className="relative space-y-1 md:space-y-2 my-2 md:my-0">
-              <h2 className="text-gray-900  font-extrabold text-2xl md:text-4xl tracking-tight">
-                Offre Spéciale
+              <h2 className="text-red-500  font-extrabold text-2xl md:text-4xl tracking-tight">
+                Promotion
               </h2>
-              <img
-                className="absolute -top-3 right-7 md:-right-8 w-8 h-8 md:w-10 md:h-10"
-                src={eco}
-                alt="Eco"
-              />
+
               {/* Price */}
               {loading ? (
                 <div className="mt-4 h-8 w-full bg-gray-200 rounded-lg animate-pulse"></div>
@@ -251,7 +247,7 @@ export default function SpecialOfferCard() {
                     </span>
                   </div>
 
-                  <span className="line-through text-gray-400 text-sm md:ml-0 ml-3 mt-1">
+                  <span className="line-through text-gray-400 text-xl md:ml-0 ml-3 mt-1">
                     {originalPrice}{" "}
                   </span>
                   <span className="text-xs text-red-500 font-semibold">

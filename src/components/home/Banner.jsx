@@ -16,7 +16,7 @@ export default function Banner() {
     dots: true,
     infinite: true,
     autoplay: true,
-    autoplaySpeed: 4000,
+    autoplaySpeed: 2000,
     speed: 800,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -28,19 +28,19 @@ export default function Banner() {
       title: "For Men",
       img: men,
       button: "Learn More",
-      link: "/shop",
+      link: "/category/homme",
     },
     {
       title: "For Women",
       img: women,
       button: "Explore",
-      link: "/shop",
+      link: "/category/femme",
     },
     {
       title: "For kid's",
       img: kid,
       button: "Contact Us",
-      link: "/shop",
+      link: "/category/enfant",
     },
   ];
 

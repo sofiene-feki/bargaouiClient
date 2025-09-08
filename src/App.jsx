@@ -30,6 +30,7 @@ const LazyCategory = lazy(() => import("./pages/catrgory"));
 const LazyLogin = lazy(() => import("./pages/login"));
 const LazyOrders = lazy(() => import("./pages/Orders"));
 const LazyOrderDetail = lazy(() => import("./pages/OrderDetail"));
+const LazyPackDetails = lazy(() => import("./pages/PackDetails"));
 
 function App() {
   const location = useLocation();
@@ -63,6 +64,7 @@ function App() {
         }
       >
         {shouldShowHeader && <Header />}
+
         <Cart />
 
         <Routes>
@@ -76,7 +78,7 @@ function App() {
           <Route path="Checkout" element={<LazyCheckoutPage />} />
           <Route path="/product/:slug" element={<LazyProductDetails />} />
           <Route path="/order/:id" element={<LazyOrderDetail />} />
-
+          <Route path="/packs/:slug" element={<LazyPackDetails />} />
           <Route path="/*" element={"rawa7"} />
         </Routes>
 

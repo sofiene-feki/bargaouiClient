@@ -44,6 +44,13 @@ export default function ShopManagementSection({
               color="text-gray-600"
               setView={setView}
             />
+            <ServiceItem
+              name="Ajouter un pack"
+              view="package"
+              icon={<FaPlus />}
+              color="text-gray-600"
+              setView={setView}
+            />
           </Disclosure.Panel>
         </>
       )}
