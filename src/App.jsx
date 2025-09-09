@@ -78,7 +78,7 @@ function App() {
           <Route path="Checkout" element={<LazyCheckoutPage />} />
           <Route path="/product/:slug" element={<LazyProductDetails />} />
           <Route path="/order/:id" element={<LazyOrderDetail />} />
-          <Route path="/packs/:slug" element={<LazyPackDetails />} />
+          <Route path="/pack/:slug" element={<LazyPackDetails />} />
           <Route path="/*" element={"rawa7"} />
         </Routes>
 

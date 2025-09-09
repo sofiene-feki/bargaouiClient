@@ -8,6 +8,7 @@ import SpecialOffer from "../components/home/SpecialOffer";
 import React from "react";
 import bg from "../assets/bg.jpg";
 import Story from "../components/home/Story";
+import Packs from "../components/home/Packs";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <Banner />
       <NewArrivals />
       <SpecialOffer />
+      <Packs />
       <BestSellers />
       <Story />
     </div>

@@ -42,38 +42,37 @@ export default function Story() {
   });
 
   const [slides, setSlides] = useState([]);
+  const fetchSlides = async () => {
+    try {
+      setLoading(true);
+      const res = await getStorySlides();
+
+      const formattedSlides = res.data.map((slide) => ({
+        ...slide,
+        videoUrl: slide.videoUrl
+          ? `https://bargaouiserver.onrender.com/${slide.videoUrl.replace(
+              /\\/g,
+              "/"
+            )}`
+          : null,
+      }));
+
+      // Only add "create new story" card if user is logged in
+      const newSlides = userInfo
+        ? [{ isCreate: true }, ...formattedSlides]
+        : formattedSlides;
+
+      setSlides(newSlides);
+    } catch (err) {
+      console.error("❌ Failed to fetch slides:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchSlides = async () => {
-      try {
-        setLoading(true);
-        const res = await getStorySlides();
-
-        const formattedSlides = res.data.map((slide) => ({
-          ...slide,
-          videoUrl: slide.videoUrl
-            ? `https://bargaouiserver.onrender.com/${slide.videoUrl.replace(
-                /\\/g,
-                "/"
-              )}`
-            : null,
-        }));
-
-        // Only add "create new story" card if user is logged in
-        const newSlides = userInfo
-          ? [{ isCreate: true }, ...formattedSlides]
-          : formattedSlides;
-
-        setSlides(newSlides);
-      } catch (err) {
-        console.error("❌ Failed to fetch slides:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchSlides();
-  }, [userInfo]); // ✅ runs on mount and when user changes
+  }, []); // ✅ runs on mount and when user changes
 
   const handleSubmit = async (e) => {
     e.preventDefault();

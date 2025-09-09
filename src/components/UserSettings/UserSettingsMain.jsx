@@ -9,6 +9,7 @@ export default function UserSettingsMain({
   handleCreateProduct,
   handleSignOut,
   setUserMenuOpen,
+  handleCreatePack,
 }) {
   return (
     <div className="space-y-3 pb-8">
@@ -17,6 +18,7 @@ export default function UserSettingsMain({
       <ShopManagementSection
         setView={setView}
         handleCreateProduct={handleCreateProduct}
+        handleCreatePack={handleCreatePack}
       />
       <ServicesSection setView={setView} />
 

@@ -37,6 +37,11 @@ export default function UserSettingsLayout({ setUserMenuOpen, handleSignOut }) {
     setUserMenuOpen(false);
   };
 
+  const handleCreatePack = () => {
+    navigate("/pack/new", { state: { mode: "create" } });
+    setUserMenuOpen(false);
+  };
+
   const ActiveComponent = CONFIG_COMPONENTS[view];
 
   return (
@@ -71,6 +76,7 @@ export default function UserSettingsLayout({ setUserMenuOpen, handleSignOut }) {
           handleCreateProduct={handleCreateProduct}
           handleSignOut={handleSignOut}
           setUserMenuOpen={setUserMenuOpen}
+          handleCreatePack={handleCreatePack}
         />
       ) : (
         <ActiveComponent />

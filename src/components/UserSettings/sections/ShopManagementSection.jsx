@@ -3,10 +3,12 @@ import { Disclosure } from "@headlessui/react";
 import { FaStore, FaPlus, FaChevronRight } from "react-icons/fa";
 import ChevronIcon from "../ChevronIcon";
 import ServiceItem from "../ServiceItem";
+import { Link } from "react-router-dom";
 
 export default function ShopManagementSection({
   setView,
   handleCreateProduct,
+  handleCreatePack,
 }) {
   return (
     <Disclosure defaultOpen>
@@ -44,13 +46,16 @@ export default function ShopManagementSection({
               color="text-gray-600"
               setView={setView}
             />
-            <ServiceItem
-              name="Ajouter un pack"
-              view="package"
-              icon={<FaPlus />}
-              color="text-gray-600"
-              setView={setView}
-            />
+            <p
+              className="flex items-center justify-between gap-2 text-gray-600 w-full cursor-pointer p-2 rounded-md  hover:bg-gray-100"
+              onClick={handleCreatePack}
+            >
+              <span className="flex gap-2">
+                {" "}
+                <FaPlus className="mt-1" /> Ajouter un Pack{" "}
+              </span>
+              <FaChevronRight className="w-5 h-5 text-gray-400" />
+            </p>
           </Disclosure.Panel>
         </>
       )}

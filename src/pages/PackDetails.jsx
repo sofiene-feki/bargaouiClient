@@ -8,10 +8,25 @@ import {
 } from "react-icons/hi";
 import ProductMediaGallery from "../components/product/ProductMediaGallery";
 import { FaShippingFast } from "react-icons/fa";
-import { getPack, packCreate, updatePack, removePack } from "../functions/pack";
+import { createPack, getPack } from "../functions/pack";
 import { useDispatch } from "react-redux";
 import { addItem } from "../redux/cart/cartSlice";
 import { openCart } from "../redux/ui/cartDrawer";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+  Field,
+  Label,
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+} from "@headlessui/react";
+import { getAllProductTitles } from "../functions/product";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/24/outline";
+import { Input, Textarea } from "../components/ui";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -28,12 +43,12 @@ export default function PackDetails() {
   const isView = currentMode === "view";
   const isCreate = currentMode === "create";
 
-  const SERVER_URL = "";
+  const SERVER_URL = "http://localhost:8000";
 
   const emptyPack = {
     title: "",
     description: "",
-    products: [], // [{ title, color: [objects], sizes: [strings] }]
+    products: [], // will hold [{ _id, Title, slug, colors, sizes }]
     price: 0,
     media: [],
   };
@@ -48,63 +63,6 @@ export default function PackDetails() {
   // { [idx]: { color: <colorObj|null>, size: <string|null> } }
   const [selectedChoices, setSelectedChoices] = useState({});
   const dispatch = useDispatch();
-
-  const normalizeMediaSrc = (p) => {
-    if (!p) return p;
-
-    const rawMedia = Array.isArray(p.media)
-      ? p.media
-      : p.media
-      ? [p.media]
-      : [];
-    const normalizedMedia = rawMedia.map((m) => ({
-      ...m,
-      src: m?.src?.startsWith("http")
-        ? m.src
-        : m?.src
-        ? SERVER_URL + m.src
-        : m?.src,
-    }));
-
-    const normalizedProducts = (p.products || []).map((prod) => {
-      const normColors = (prod.color || []).map((c) => ({
-        ...c,
-        src: c?.src && !c.src.startsWith("http") ? SERVER_URL + c.src : c?.src,
-      }));
-      return { ...prod, color: normColors };
-    });
-
-    return { ...p, media: normalizedMedia, products: normalizedProducts };
-  };
-
-  useEffect(() => {
-    const fetchPack = async () => {
-      try {
-        setLoading(true);
-        if (!isCreate) {
-          const { data } = await getPack(slug);
-          const normalized = normalizeMediaSrc(data);
-          setPack(normalized);
-          setSelectedMedia(normalized.media?.[0] || null);
-          setSelectedChoices({}); // ✅ reset selections on load
-        } else {
-          setPack(emptyPack);
-          setSelectedMedia(null);
-          setSelectedChoices({});
-        }
-      } catch (err) {
-        console.error("❌ Error fetching pack:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPack();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCreate, slug]);
-
-  useEffect(() => {
-    if (pack) setSelectedMedia(pack.media?.[0] || null);
-  }, [pack]);
 
   // media handlers
   const handleFileUpload = (e) => {
@@ -128,43 +86,79 @@ export default function PackDetails() {
     setSelectedMedia(updated[0] || null);
   };
 
-  // basic inputs
   const handleBasicChange = (key, value) => {
     setPack((prev) => ({ ...prev, [key]: value }));
   };
 
-  // submit/create
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
       const formData = new FormData();
-      formData.append("title", pack.title || "");
-      formData.append("description", pack.description || "");
-      formData.append("price", Number(pack.price) || 0);
-      formData.append(
-        "products",
-        JSON.stringify(
-          (pack.products || []).map((p) => ({
-            title: p.title,
-            color: p.color || [],
-            sizes: p.sizes || [],
-          }))
-        )
-      );
-      (pack.media || []).forEach(
-        (m) => m?.file && formData.append("mediaFiles", m.file)
-      );
+      formData.append("title", pack.title);
+      formData.append("price", pack.price);
+      formData.append("description", pack.description);
+      formData.append("products", JSON.stringify(pack.products));
 
-      const existingMedia = (pack.media || [])
-        .filter((m) => !m.file && m.src)
-        .map((m) => m.src);
-      existingMedia.forEach((src) => formData.append("existingMedia[]", src));
+      if (pack.media && pack.media.length > 0) {
+        pack.media.forEach((m) => formData.append("mediaFiles", m.file));
+      }
 
-      const res = await packCreate(formData);
-      navigate(`/packs/${res.data.slug}`, { replace: true });
+      const { data } = await createPack(formData);
+      console.log("✅ Pack created:", data);
     } catch (err) {
-      console.error("❌ Error creating pack:", err);
+      console.error(
+        "❌ Error creating pack:",
+        err.response?.data || err.message
+      );
     }
   };
+
+  const normalizeMediaSrc = (pack) => {
+    if (!pack) return pack;
+
+    // Normalize pack media
+    const normalizedMedia = (pack.media || []).map((m) => ({
+      ...m,
+      src: m.src.startsWith("http") ? m.src : SERVER_URL + m.src,
+    }));
+
+    // Normalize each product's media
+    const normalizedProducts = (pack.products || []).map((p) => {
+      const normalizedProductMedia = (p.media || []).map((m) => ({
+        ...m,
+        src: m.src.startsWith("http") ? m.src : SERVER_URL + m.src,
+      }));
+
+      return { ...p, media: normalizedProductMedia };
+    });
+
+    return { ...pack, media: normalizedMedia, products: normalizedProducts };
+  };
+
+  useEffect(() => {
+    if (isCreate) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchPack = async () => {
+      try {
+        setLoading(true);
+        const { data } = await getPack(slug); // Axios call to /pack/:slug
+        const normalizedPack = normalizeMediaSrc(data);
+        setPack(normalizedPack);
+        setSelectedMedia(normalizedPack.media?.[0]?.src || "");
+        console.log("✅ Pack fetched:", normalizedPack);
+      } catch (error) {
+        console.error("❌ Error fetching pack:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPack();
+  }, [slug, isCreate]);
 
   // update/edit
   const handleUpdate = async () => {
@@ -279,6 +273,25 @@ export default function PackDetails() {
     dispatch(addItem(cartPayload));
     dispatch(openCart());
   };
+  const [query, setQuery] = useState("");
+  const [options, setOptions] = useState([]); // all fetched titles
+  const [selectedTitles, setSelectedTitles] = useState([]); // selected values
+
+  // Fetch all product titles once
+  useEffect(() => {
+    setLoading(true);
+    const fetchTitles = async () => {
+      try {
+        const res = await getAllProductTitles();
+        setOptions(res);
+      } catch (err) {
+        console.error("❌ Error fetching titles:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTitles();
+  }, []);
 
   return (
     <div className="py-15 md:py-20 px-2">
@@ -304,7 +317,7 @@ export default function PackDetails() {
               </button>
 
               <button
-                onClick={() => (isCreate ? handleSubmit() : handleUpdate())}
+                onClick={handleSubmit}
                 className="flex md:text-base text-xs items-center md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 bg-green-50 text-green-600  
                   focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-400 
                   rounded-xl shadow-sm hover:bg-green-100 transition"
@@ -323,7 +336,7 @@ export default function PackDetails() {
                 <span>Modifier</span>
               </button>
               <button
-                onClick={handleDelete}
+                onClick={() => console.log(selectedMedia)}
                 className="flex items-center md:text-base text-xs md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 shadow-sm transition  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400"
               >
                 <HiOutlineTrash className="h-5 w-5" />
@@ -354,32 +367,24 @@ export default function PackDetails() {
           {/* Title / Price / Desc */}
           {isEdit || isCreate ? (
             <>
-              <label className="block text-sm font-medium text-gray-700">
-                Titre
-              </label>
-              <input
+              <Input
+                label="Titre"
                 type="text"
-                className="w-full border border-gray-300 rounded-lg p-2 mt-1 mb-3"
                 value={pack?.title || ""}
                 onChange={(e) => handleBasicChange("title", e.target.value)}
               />
 
-              <label className="block text-sm font-medium text-gray-700">
-                Prix (TND)
-              </label>
-              <input
+              <Input
+                label="Price"
                 type="number"
                 min="0"
                 step="1"
-                className="w-full border border-gray-300 rounded-lg p-2 mt-1 mb-3"
                 value={pack?.price || 0}
                 onChange={(e) => handleBasicChange("price", e.target.value)}
               />
 
-              <label className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
+              <Textarea
+                label="Description"
                 rows={4}
                 className="w-full border border-gray-300 rounded-lg p-2 mt-1"
                 value={pack?.description || ""}
@@ -387,234 +392,193 @@ export default function PackDetails() {
                   handleBasicChange("description", e.target.value)
                 }
               />
+              <Field>
+                <Label className="block text-sm font-medium text-gray-700 mb-1">
+                  Produits
+                </Label>
+                <Listbox
+                  value={selectedTitles}
+                  onChange={(values) => {
+                    setSelectedTitles(values);
+
+                    // Only store the _id of selected products
+                    const productIds = values.map((p) => p._id);
+
+                    handleBasicChange("products", productIds);
+                  }}
+                  multiple
+                >
+                  {({ open }) => (
+                    <div className="relative">
+                      <ListboxButton className="relative w-full py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <span
+                          className={`block truncate ${
+                            selectedTitles.length === 0 ? "text-gray-400" : ""
+                          }`}
+                        >
+                          {selectedTitles.length === 0
+                            ? "Please select an option"
+                            : selectedTitles
+                                .map((t) => t.Title || t.name)
+                                .join(", ")}
+                        </span>
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                          <ChevronUpDownIcon
+                            className="w-5 h-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </ListboxButton>
+
+                      {open && (
+                        <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
+                          <ListboxOptions className="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
+                            {options.map((title) => (
+                              <ListboxOption key={title._id} value={title}>
+                                {({ selected, active }) => (
+                                  <div
+                                    className={`${
+                                      selected && active
+                                        ? "bg-gray-700 text-white"
+                                        : selected
+                                        ? "bg-gray-200 text-gray-900"
+                                        : active
+                                        ? "bg-blue-600 text-white"
+                                        : "text-gray-900"
+                                    } cursor-default select-none relative py-2 pl-3 pr-9`}
+                                  >
+                                    <span
+                                      className={`${
+                                        selected
+                                          ? "font-semibold"
+                                          : "font-normal"
+                                      } block truncate`}
+                                    >
+                                      {title.Title || title.name}
+                                    </span>
+
+                                    {selected && (
+                                      <span
+                                        className={`absolute inset-y-0 right-0 flex items-center pr-4 ${
+                                          active
+                                            ? "text-white"
+                                            : "text-indigo-600"
+                                        }`}
+                                      >
+                                        <CheckIcon
+                                          className="w-5 h-5"
+                                          aria-hidden="true"
+                                        />
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                              </ListboxOption>
+                            ))}
+                          </ListboxOptions>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Listbox>
+              </Field>
             </>
           ) : (
             <>
-              {loading ? (
-                <div className="h-8 mb-2 w-3/4 bg-gray-200 rounded-lg animate-pulse" />
-              ) : (
-                <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl mb-2">
-                  {pack?.title}
-                </h1>
-              )}
+              <>
+                {loading ? (
+                  <div className="h-8 mb-2 w-3/4 bg-gray-200 rounded-lg animate-pulse"></div>
+                ) : (
+                  <h1 className="text-2xl break-words bg-clip-text drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] font-bold text-gray-900 sm:text-3xl mb-2">
+                    {pack?.title}
+                  </h1>
+                )}
 
-              <p className="text-3xl md:flex border-b border-gray-200 justify-between font-bold text-gray-900 mb-3">
-                <span>{formatPrice(pack?.price)}</span>
-                <span className="flex items-center gap-2">
-                  <FaShippingFast className="text-[#2c2d84] md:w-6 md:h-6 w-5 h-5 ml-3" />
-                  <span className="text-xs text-[#2c2d84]">
-                    Livraison rapide
-                  </span>
-                </span>
-              </p>
+                {loading ? (
+                  <div className="h-8 mb-2 w-1/4 bg-gray-200 rounded-lg animate-pulse"></div>
+                ) : (
+                  <p className="text-3xl flex border-b border-gray-200 justify-between font-bold break-words bg-clip-text drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] text-gray-900 mb-3">
+                    <span>{formatPrice(pack?.price)}</span>
+                    <span className="flex items-center gap-2">
+                      {pack?.price > 0 ? (
+                        <span className="text-green-600 text-xs font-semibold">
+                          En stock
+                        </span>
+                      ) : (
+                        <span className="text-red-500 text-xs line-through">
+                          Rupture de stock
+                        </span>
+                      )}
+                      <FaShippingFast className="text-[#2c2d84] md:w-6 md:h-6 w-5 h-5 ml-3" />
+                      <span className="text-xs text-[#2c2d84]">
+                        Livraison rapide
+                      </span>
+                    </span>
+                  </p>
+                )}
+              </>
+              {pack?.products?.map((product, pi) => (
+                <div
+                  key={pi}
+                  className="flex flex-col md:flex-row gap-4 items-start mb-6"
+                >
+                  {/* Media column: only first image */}
+                  {product.media?.[0] && (
+                    <img
+                      src={product.media[0].src}
+                      alt={product.media[0].alt || "media"}
+                      className="w-auto h-52 object-cover rounded-md"
+                    />
+                  )}
 
-              <div className="mb-4">
-                <h3 className="font-semibold">Description :</h3>
-                <p className="text-[16px] text-gray-500 whitespace-pre-line">
-                  {pack?.description || ""}
-                </p>
-              </div>
+                  {/* Info column */}
+                  <div className="flex-1 flex flex-col gap-2">
+                    {/* Product title */}
+                    <h2 className="text-lg font-semibold">{product.Title}</h2>
+
+                    {/* Product colors */}
+                    {product.colors?.length > 0 && (
+                      <div className="flex gap-3">
+                        {product.colors.map((c, ci) => (
+                          <button
+                            key={ci}
+                            className="w-12 h-12 rounded-full border overflow-hidden flex-shrink-0"
+                            style={{ borderColor: c.value ?? "#000" }}
+                          >
+                            {c.src ? (
+                              <img
+                                src={c.src}
+                                alt={c.alt || c.name}
+                                className="w-full h-full object-cover rounded-full"
+                              />
+                            ) : (
+                              <div
+                                className="w-full h-full rounded-full"
+                                style={{ backgroundColor: c.value ?? "#000" }}
+                              />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Product sizes */}
+                    {product.sizes?.length > 0 && (
+                      <div className="grid md:grid-cols-4 grid-cols-3 gap-2 mt-2">
+                        {product.sizes.map((s, si) => (
+                          <button
+                            key={si}
+                            className="border rounded-md px-2 py-1 text-xs font-medium hover:border-[#87a736]"
+                          >
+                            {s.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </>
-          )}
-
-          {/* Products inside the pack */}
-          <div className="mt-6">
-            <h3 className="font-semibold mb-2">Produits du pack</h3>
-
-            {loading ? (
-              <div className="h-20 w-full bg-gray-200 rounded-lg animate-pulse" />
-            ) : (pack?.products || []).length === 0 ? (
-              <p className="text-gray-500 text-sm">
-                Aucun produit dans ce pack.
-              </p>
-            ) : (
-              <div className="space-y-4">
-                {(pack.products || []).map((p, idx) => {
-                  const choice = selectedChoices[idx] || {
-                    color: null,
-                    size: null,
-                  };
-
-                  return (
-                    <div
-                      key={idx}
-                      className="rounded-lg border border-gray-200 p-3"
-                    >
-                      <div className="font-medium">{p.title}</div>
-
-                      {/* VIEW MODE: selectable colors */}
-                      {!isEdit &&
-                        !isCreate &&
-                        Array.isArray(p.color) &&
-                        p.color.length > 0 && (
-                          <>
-                            <div className="text-sm text-gray-600 mt-2 mb-1">
-                              Couleurs
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {p.color.map((c, i) => {
-                                const hasImg = !!c.src;
-                                const bg = c.value || "#000";
-                                const isActive = choice.color
-                                  ? choice.color._id && c._id
-                                    ? choice.color._id === c._id
-                                    : (choice.color.name || "") ===
-                                      (c.name || "")
-                                  : false;
-
-                                return (
-                                  <button
-                                    type="button"
-                                    key={i}
-                                    title={c.name}
-                                    onClick={() => selectColor(idx, c)}
-                                    className={classNames(
-                                      "inline-flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full ring-1 ring-gray-300 overflow-hidden",
-                                      isActive
-                                        ? "outline outline-2 outline-[#87a736] outline-offset-2"
-                                        : ""
-                                    )}
-                                    style={{
-                                      backgroundColor: hasImg ? c.value : bg,
-                                    }}
-                                  >
-                                    {hasImg ? (
-                                      <img
-                                        src={c.src}
-                                        alt={c.alt || c.name || "color"}
-                                        className="w-full h-full object-cover"
-                                      />
-                                    ) : null}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </>
-                        )}
-
-                      {/* EDIT/CREATE: display-only chips */}
-                      {(isEdit || isCreate) &&
-                        Array.isArray(p.color) &&
-                        p.color.length > 0 && (
-                          <>
-                            <div className="text-sm text-gray-600 mt-2 mb-1">
-                              Couleurs
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {p.color.map((c, i) => {
-                                const hasImg = !!c.src;
-                                const bg = c.value || "#000";
-                                return (
-                                  <div
-                                    key={i}
-                                    className="flex items-center gap-2"
-                                  >
-                                    <span
-                                      title={c.name}
-                                      style={{
-                                        backgroundColor: hasImg
-                                          ? undefined
-                                          : bg,
-                                      }}
-                                      className="inline-flex items-center justify-center w-7 h-7 rounded-full ring-1 ring-gray-300 overflow-hidden"
-                                    >
-                                      {hasImg ? (
-                                        <img
-                                          src={c.src}
-                                          alt={c.alt || c.name || "color"}
-                                          className="w-full h-full object-cover"
-                                        />
-                                      ) : null}
-                                    </span>
-                                    <span className="text-xs text-gray-700">
-                                      {c.name}
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </>
-                        )}
-
-                      {/* VIEW MODE: selectable sizes */}
-                      {!isEdit &&
-                        !isCreate &&
-                        Array.isArray(p.sizes) &&
-                        p.sizes.length > 0 && (
-                          <>
-                            <div className="text-sm text-gray-600 mt-3 mb-1">
-                              Tailles
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {p.sizes.map((s, i) => {
-                                const active = choice.size === s;
-                                return (
-                                  <button
-                                    type="button"
-                                    key={i}
-                                    onClick={() => selectSize(idx, s)}
-                                    className={classNames(
-                                      "border rounded-md px-2 py-1 text-xs",
-                                      active
-                                        ? "border-[#87a736] bg-[#87a736] text-white"
-                                        : "border-gray-300 bg-white text-gray-900 hover:border-[#87a736]"
-                                    )}
-                                  >
-                                    {s}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </>
-                        )}
-
-                      {/* EDIT/CREATE: display-only sizes */}
-                      {(isEdit || isCreate) &&
-                        Array.isArray(p.sizes) &&
-                        p.sizes.length > 0 && (
-                          <>
-                            <div className="text-sm text-gray-600 mt-3 mb-1">
-                              Tailles
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {p.sizes.map((s, i) => (
-                                <span
-                                  key={i}
-                                  className="border border-gray-300 bg-white text-gray-900 rounded-md px-2 py-1 text-xs"
-                                >
-                                  {s}
-                                </span>
-                              ))}
-                            </div>
-                          </>
-                        )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* ✅ View mode: Add Pack to Cart (enabled only when all selections are done) */}
-          {isView && (pack?.products || []).length > 0 && (
-            <button
-              type="button"
-              onClick={handleAddPackToCart}
-              disabled={!allSelected}
-              className={classNames(
-                "w-full mt-6 flex items-center justify-center gap-4 rounded-md px-6 py-3 font-semibold transition",
-                allSelected
-                  ? "bg-[#87a736] text-white hover:bg-[#6d8a2b]"
-                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
-              )}
-              title={
-                allSelected
-                  ? "Ajouter ce pack au panier"
-                  : "Sélectionnez une couleur et une taille pour chaque produit (si disponibles)"
-              }
-            >
-              Ajouter le pack au panier
-            </button>
           )}
         </div>
       </div>
