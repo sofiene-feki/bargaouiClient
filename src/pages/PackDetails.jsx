@@ -43,7 +43,7 @@ export default function PackDetails() {
   const isView = currentMode === "view";
   const isCreate = currentMode === "create";
 
-  const SERVER_URL = "http://localhost:8000";
+  const SERVER_URL = "https://bargaouiserver.onrender.com";
 
   const emptyPack = {
     title: "",
