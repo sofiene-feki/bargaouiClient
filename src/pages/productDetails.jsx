@@ -59,7 +59,7 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(isCreate ? emptyProduct : null);
   const [loading, setLoading] = useState(true);
 
-  const SERVER_URL = "https://bargaouiserver.onrender.com";
+  const API_BASE_URL_MEDIA = import.meta.env.VITE_API_BASE_URL_MEDIA;
 
   // Normalize both media and colors
   const normalizeMediaSrc = (product) => {
@@ -67,12 +67,13 @@ export default function ProductDetails() {
 
     const normalizedMedia = (product.media || []).map((m) => ({
       ...m,
-      src: m.src.startsWith("http") ? m.src : SERVER_URL + m.src,
+      src: m.src.startsWith("http") ? m.src : API_BASE_URL_MEDIA + m.src,
     }));
 
     const normalizedColors = (product.colors || []).map((c) => ({
       ...c,
-      src: c.src && !c.src.startsWith("http") ? SERVER_URL + c.src : c.src,
+      src:
+        c.src && !c.src.startsWith("http") ? API_BASE_URL_MEDIA + c.src : c.src,
     }));
 
     return { ...product, media: normalizedMedia, colors: normalizedColors };

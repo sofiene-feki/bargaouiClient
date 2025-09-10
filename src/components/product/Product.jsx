@@ -20,6 +20,7 @@ export default function Product({ product, productsPerPage, loading }) {
     ? mainMedia.src
     : "https://via.placeholder.com/300";
   const imageAlt = mainMedia ? mainMedia.alt : product.name;
+  const API_BASE_URL_MEDIA = import.meta.env.VITE_API_BASE_URL_MEDIA;
 
   const settings = {
     dots: true,
@@ -201,7 +202,7 @@ export default function Product({ product, productsPerPage, loading }) {
                 {product.colors?.map((color, i) => (
                   <div key={color._id || i}>
                     <img
-                      src={`https://bargaouiserver.onrender.com${color.src}`}
+                      src={`${API_BASE_URL_MEDIA}${color.src}`}
                       alt={color.name}
                       className="w-full h-72 md:h-120 object-cover"
                     />

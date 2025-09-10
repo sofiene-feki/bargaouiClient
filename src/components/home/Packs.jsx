@@ -18,7 +18,7 @@ export default function Packs() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const SERVER_URL = "https://bargaouiserver.onrender.com";
+  const API_BASE_URL_MEDIA = import.meta.env.VITE_API_BASE_URL_MEDIA;
 
   const normalizeMediaSrc = (input) => {
     if (!input) return input;
@@ -32,7 +32,7 @@ export default function Packs() {
     const normalizedMedia = input.media
       ? input.media.map((m) => ({
           ...m,
-          src: m.src.startsWith("http") ? m.src : SERVER_URL + m.src,
+          src: m.src.startsWith("http") ? m.src : API_BASE_URL_MEDIA + m.src,
         }))
       : [];
 

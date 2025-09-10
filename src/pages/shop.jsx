@@ -51,7 +51,7 @@ export default function Shop() {
   const start = currentPage * productsPerPage + 1;
   const end = Math.min((currentPage + 1) * productsPerPage, totalProducts);
 
-  const SERVER_URL = "https://bargaouiserver.onrender.com";
+  const API_BASE_URL_MEDIA = import.meta.env.VITE_API_BASE_URL_MEDIA;
 
   // Normalize single product or array of products
   const normalizeMediaSrc = (input) => {
@@ -65,7 +65,7 @@ export default function Shop() {
 
     const normalizedMedia = input.media.map((m) => ({
       ...m,
-      src: m.src.startsWith("http") ? m.src : SERVER_URL + m.src,
+      src: m.src.startsWith("http") ? m.src : API_BASE_URL_MEDIA + m.src,
     }));
 
     return { ...input, media: normalizedMedia };

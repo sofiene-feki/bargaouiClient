@@ -125,14 +125,14 @@ export default function Pack({ product, productsPerPage, loading }) {
           </div>
         </div>
       ) : (
-        <div className="group relative rounded-md cursor-pointer">
+        <div className="group relative  cursor-pointer overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300">
           <Link
             key={product._id}
             to={`/pack/${product.slug}`}
-            className="group relative flex flex-col overflow-hidden   border border-gray-300 transition-transform transform hover:scale-105 hover:shadow-2xl"
+            className="block relative"
           >
-            {/* Product Image fills most of the card */}
-            <div className="w-full flex-1 overflow-hidden bg-white">
+            {/* Image / Slider */}
+            <div className="relative w-full h-120 md:h-120 bg-gray-50 overflow-hidden">
               <Slider
                 {...{
                   dots: true,
@@ -144,94 +144,41 @@ export default function Pack({ product, productsPerPage, loading }) {
                   slidesToScroll: 1,
                   arrows: false,
                   fade: true,
-                  appendDots: (dots) => (
-                    <div
-                      style={{
-                        backgroundColor: "#fff",
-                        padding: "4px",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      <ul
-                        style={{
-                          margin: "0px",
-                          display: "flex",
-                          justifyContent: "center",
-                          gap: "3px",
-                        }}
-                      >
-                        {dots}
-                      </ul>
-                    </div>
-                  ),
-                  customPaging: (i) => {
-                    let bgColor = "#ccc"; // default for main image
-                    if (i > 0 && product.colors && product.colors[i - 1]) {
-                      bgColor = product.colors[i - 1].value;
-                    }
-
-                    return (
-                      <div
-                        className="custom-dot "
-                        style={{
-                          width: "25px",
-                          height: "4px",
-                          borderRadius: "20%",
-                          backgroundColor: bgColor,
-                          opacity: 0.3, // default low opacity
-                          transition: "opacity 0.3s ease",
-                        }}
-                      ></div>
-                    );
-                  },
                 }}
               >
-                {/* Main product image */}
                 {mainMedia && (
                   <div>
                     <img
                       src={imageSrc}
                       alt={product.Title}
-                      className="w-full h-72 md:h-120 object-cover"
+                      className="w-full h-120 md:h-120 object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
                 )}
-
-                {/* Color images */}
                 {product.colors?.map((color, i) => (
                   <div key={color._id || i}>
                     <img
-                      src={`https://bargaouiserver.onrender.com${color.src}`}
+                      src={`${import.meta.env.VITE_API_BASE_URL_MEDIA}${
+                        color.src
+                      }`}
                       alt={color.name}
                       className="w-full h-72 md:h-120 object-cover"
                     />
                   </div>
                 ))}
               </Slider>
-            </div>
 
-            {/* Text Under Image */}
-            <div className="bg-white md:px-3 px-1 text-left">
-              <div className="flex justify-between items-center pb-1" dir="rtl">
-                <h3 className="md:text-lg truncate whitespace-nowrap text-base font-semibold text-gray-800 group-hover:text-[#87a736] transition-colors duration-300">
+              {/* Gradient overlay with title & price */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3 flex justify-between items-center">
+                <p className="text-[#87a736] font-bold text-sm md:text-base">
+                  {product.price} د.ت
+                </p>
+                <h3 className="text-white text-sm md:text-base font-semibold truncate">
                   {product.title}
                 </h3>
-                <p className="text-sm text-gray-500 whitespace-nowrap">
-                  {product.Price} د.ت
-                </p>
               </div>
             </div>
           </Link>
-
-          <button
-            onClick={handleAddToCart}
-            className="flex items-center justify-center border border-gray-300 gap-2 w-full px-2 py-2 mt-1
-          bg-white text-gray-800 font-semibold  shadow-sm  md:text-base text-xs
-          hover:bg-[#87a736] hover:text-white transition duration-300 ease-in-out"
-          >
-            <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />
-            Ajouter au panier
-          </button>
         </div>
       )}
     </div>

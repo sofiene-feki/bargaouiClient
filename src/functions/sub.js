@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://bargaouiserver.onrender.com/api"; // Update if needed
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Fetch subcategories by parent category
 export const getSubCategories = async (parentId) => {

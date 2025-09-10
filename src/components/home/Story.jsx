@@ -28,6 +28,7 @@ import { useSelector } from "react-redux";
 
 export default function Story() {
   const { userInfo, isAuthenticated } = useSelector((state) => state.user);
+  const API_BASE_URL_MEDIA = import.meta.env.VITE_API_BASE_URL_MEDIA;
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,10 +51,7 @@ export default function Story() {
       const formattedSlides = res.data.map((slide) => ({
         ...slide,
         videoUrl: slide.videoUrl
-          ? `https://bargaouiserver.onrender.com/${slide.videoUrl.replace(
-              /\\/g,
-              "/"
-            )}`
+          ? `${API_BASE_URL_MEDIA}/${slide.videoUrl.replace(/\\/g, "/")}`
           : null,
       }));
 

@@ -43,7 +43,7 @@ export default function PackDetails() {
   const isView = currentMode === "view";
   const isCreate = currentMode === "create";
 
-  const SERVER_URL = "https://bargaouiserver.onrender.com";
+  const API_BASE_URL_MEDIA = import.meta.env.VITE_API_BASE_URL_MEDIA;
 
   const emptyPack = {
     title: "",
@@ -120,14 +120,14 @@ export default function PackDetails() {
     // Normalize pack media
     const normalizedMedia = (pack.media || []).map((m) => ({
       ...m,
-      src: m.src.startsWith("http") ? m.src : SERVER_URL + m.src,
+      src: m.src.startsWith("http") ? m.src : API_BASE_URL_MEDIA + m.src,
     }));
 
     // Normalize each product's media
     const normalizedProducts = (pack.products || []).map((p) => {
       const normalizedProductMedia = (p.media || []).map((m) => ({
         ...m,
-        src: m.src.startsWith("http") ? m.src : SERVER_URL + m.src,
+        src: m.src.startsWith("http") ? m.src : API_BASE_URL_MEDIA + m.src,
       }));
 
       return { ...p, media: normalizedProductMedia };
