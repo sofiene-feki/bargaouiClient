@@ -13,7 +13,7 @@ export default function Footer() {
             </h4>
             <div className="text-sm text-gray-700 space-y-3 leading-relaxed ">
               <p>
-                <strong>Address:</strong> 123 Main Street, Tunis, Tunisia
+                <strong>Address:</strong> 6 Rue 2 Mars 1934, Hammam-Lif, Tunisia
               </p>
               <p>
                 <strong>Phone:</strong>{" "}
@@ -21,16 +21,17 @@ export default function Footer() {
                   href="+216 58 811 911"
                   className="hover:underline text-[#87a736] transition-colors"
                 >
-                  +216 58 811 911
+                  +216 20 235 294
                 </a>
               </p>
               <p>
                 <strong>Email:</strong>{" "}
                 <a
-                  href="mailto:info@chemicalink.tn"
+                  href="mailto:
+artisanatbargaoui.com"
                   className="hover:underline text-[#87a736] transition-colors"
                 >
-                  info@chemicalink.tn
+                  artisanatbargaoui.com
                 </a>
               </p>
             </div>
@@ -39,7 +40,7 @@ export default function Footer() {
             <div className="flex space-x-5 mt-4">
               {[
                 {
-                  href: "https://facebook.com",
+                  href: "https://www.facebook.com/ArtisanatBargaoui",
                   label: "Facebook",
                   svg: <FaFacebook className="w-6 h-6" />,
                 },

@@ -51,30 +51,28 @@ export default function Category() {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      console.log(Category, "im the category");
       try {
         const data = await getProductsByCategory({
-          Category: Category,
+          category: Category,
           page: currentPage,
           itemsPerPage: productsPerPage,
           sort: sortOption,
         });
 
-        const normalizedProducts = normalizeMediaSrc(data.products || []);
-        setProducts(normalizedProducts);
-        setTotalProducts(data.total);
+        const normalized = normalizeMediaSrc(data.products || []);
+        setProducts(normalized);
         setTotalPages(data.totalPages);
-
-        console.log("✅ Products fetched and normalized:", normalizedProducts);
-      } catch (error) {
-        console.error("❌ Error fetching products by category:", error);
+      } catch (err) {
+        console.error("❌ Error fetching products:", err);
       } finally {
         setLoading(false);
       }
     };
-
+    console.log(Category, "this is the Category");
     fetchProducts();
   }, [Category, currentPage, productsPerPage, sortOption]);
+
+  if (loading) return <p>Loading products...</p>;
 
   const start = currentPage * productsPerPage + 1;
   const end = Math.min((currentPage + 1) * productsPerPage, totalProducts);

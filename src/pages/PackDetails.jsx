@@ -8,8 +8,8 @@ import {
 } from "react-icons/hi";
 import ProductMediaGallery from "../components/product/ProductMediaGallery";
 import { FaShippingFast } from "react-icons/fa";
-import { createPack, getPack } from "../functions/pack";
-import { useDispatch } from "react-redux";
+import { createPack, getPack, removePack } from "../functions/pack";
+import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "../redux/cart/cartSlice";
 import { openCart } from "../redux/ui/cartDrawer";
 import {
@@ -27,6 +27,7 @@ import {
 import { getAllProductTitles } from "../functions/product";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/24/outline";
 import { Input, Textarea } from "../components/ui";
+import { FormatDescription } from "../components/ui"; // Assuming you have this utility function
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -36,6 +37,7 @@ export default function PackDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useSelector((state) => state.user.userInfo);
 
   const modeFromState = location.state?.mode || "view";
   const [currentMode, setCurrentMode] = useState(modeFromState);
@@ -55,6 +57,8 @@ export default function PackDetails() {
 
   const [pack, setPack] = useState(isCreate ? emptyPack : null);
   const [loading, setLoading] = useState(true);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
 
   // gallery
   const [selectedMedia, setSelectedMedia] = useState(null);
@@ -120,17 +124,22 @@ export default function PackDetails() {
     // Normalize pack media
     const normalizedMedia = (pack.media || []).map((m) => ({
       ...m,
-      src: m.src.startsWith("http") ? m.src : API_BASE_URL_MEDIA + m.src,
+      src: m.src?.startsWith("http") ? m.src : API_BASE_URL_MEDIA + m.src,
     }));
 
-    // Normalize each product's media
+    // Normalize each product's media and colors
     const normalizedProducts = (pack.products || []).map((p) => {
       const normalizedProductMedia = (p.media || []).map((m) => ({
         ...m,
-        src: m.src.startsWith("http") ? m.src : API_BASE_URL_MEDIA + m.src,
+        src: m.src?.startsWith("http") ? m.src : API_BASE_URL_MEDIA + m.src,
       }));
 
-      return { ...p, media: normalizedProductMedia };
+      const normalizedColors = (p.colors || []).map((c) => ({
+        ...c,
+        src: c.src?.startsWith("http") ? c.src : API_BASE_URL_MEDIA + c.src,
+      }));
+
+      return { ...p, media: normalizedProductMedia, colors: normalizedColors };
     });
 
     return { ...pack, media: normalizedMedia, products: normalizedProducts };
@@ -148,7 +157,7 @@ export default function PackDetails() {
         const { data } = await getPack(slug); // Axios call to /pack/:slug
         const normalizedPack = normalizeMediaSrc(data);
         setPack(normalizedPack);
-        setSelectedMedia(normalizedPack.media?.[0]?.src || "");
+        setSelectedMedia(normalizedPack.media?.[0] || "");
         console.log("✅ Pack fetched:", normalizedPack);
       } catch (error) {
         console.error("❌ Error fetching pack:", error);
@@ -191,17 +200,6 @@ export default function PackDetails() {
       setCurrentMode("view");
     } catch (err) {
       console.error("❌ Error updating pack:", err);
-    }
-  };
-
-  // delete
-  const handleDelete = async () => {
-    if (!window.confirm("Supprimer ce pack ?")) return;
-    try {
-      await removePack(slug);
-      navigate("/packs");
-    } catch (err) {
-      console.error("❌ Error deleting pack:", err);
     }
   };
 
@@ -293,73 +291,95 @@ export default function PackDetails() {
     fetchTitles();
   }, []);
 
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
+
+    try {
+      await removePack(pack._id);
+
+      // update UI by filtering out deleted product
+      //  setProducts((prev) => prev.filter((p) => p.slug !== slug));
+
+      alert("✅ Product deleted successfully");
+    } catch (error) {
+      console.error("❌ Failed to delete product:", error);
+      alert("Failed to delete product");
+    }
+    navigate("/shop"); // redirect to shop page
+  };
+
   return (
     <div className="py-15 md:py-20 px-2">
       {/* Header actions */}
-      <div className="flex bg-white max-w-7xl mx-auto items-center justify-between border-b border-gray-200 pb-2 mb-6">
-        <h1 className="md:text-xl text-base font-semibold text-gray-800">
-          {isCreate ? "Créer un pack" : isEdit ? "Modifier pack" : ""}
-        </h1>
-        <div className="flex gap-2">
-          {isCreate || isEdit ? (
-            <>
-              <button
-                onClick={() => {
-                  if (currentMode === "create") navigate(-1);
-                  if (currentMode === "edit") setCurrentMode("view");
-                }}
-                className="flex md:text-base text-xs items-center gap-1 md:px-4 px-2 md:py-2 py-1 
+      {user && (
+        <div className="flex bg-white max-w-7xl mx-auto items-center justify-between border-b border-gray-200 pb-2 mb-6">
+          <h1 className="md:text-xl text-base font-semibold text-gray-800">
+            {isCreate ? "Créer un pack" : isEdit ? "Modifier pack" : ""}
+          </h1>
+          <div className="flex gap-2">
+            {isCreate || isEdit ? (
+              <>
+                <button
+                  onClick={() => {
+                    if (currentMode === "create") navigate(-1);
+                    if (currentMode === "edit") setCurrentMode("view");
+                  }}
+                  className="flex md:text-base text-xs items-center gap-1 md:px-4 px-2 md:py-2 py-1 
                   bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition
                   focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400"
-              >
-                <HiOutlineX className="h-5 w-5" />
-                <span>Annuler</span>
-              </button>
+                >
+                  <HiOutlineX className="h-5 w-5" />
+                  <span>Annuler</span>
+                </button>
 
-              <button
-                onClick={handleSubmit}
-                className="flex md:text-base text-xs items-center md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 bg-green-50 text-green-600  
+                <button
+                  onClick={handleSubmit}
+                  className="flex md:text-base text-xs items-center md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 bg-green-50 text-green-600  
                   focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-400 
                   rounded-xl shadow-sm hover:bg-green-100 transition"
-              >
-                <HiOutlineCheck className="h-5 w-5" />
-                <span>Enregistrer</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => setCurrentMode("edit")}
-                className="flex items-center md:text-base text-xs md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 shadow-sm transition  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-400"
-              >
-                <HiOutlinePencil className="h-5 w-5" />
-                <span>Modifier</span>
-              </button>
-              <button
-                onClick={() => console.log(selectedMedia)}
-                className="flex items-center md:text-base text-xs md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 shadow-sm transition  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400"
-              >
-                <HiOutlineTrash className="h-5 w-5" />
-                <span>Supprimer</span>
-              </button>
-            </>
-          )}
+                >
+                  <HiOutlineCheck className="h-5 w-5" />
+                  <span>Enregistrer</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setCurrentMode("edit")}
+                  className="flex items-center md:text-base text-xs md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 shadow-sm transition  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-400"
+                >
+                  <HiOutlinePencil className="h-5 w-5" />
+                  <span>Modifier</span>
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center md:text-base text-xs md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 shadow-sm transition  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400"
+                >
+                  <HiOutlineTrash className="h-5 w-5" />
+                  <span>Supprimer</span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="max-w-7xl mx-auto lg:flex lg:gap-12">
         {/* LEFT: Media gallery */}
         {loading ? (
           <div className="w-full h-[400px] lg:w-1/2 md:mb-6 lg:mb-0 bg-gray-200 rounded-lg animate-pulse" />
         ) : (
-          <ProductMediaGallery
-            media={pack?.media || []}
-            selectedMedia={selectedMedia}
-            onSelectMedia={setSelectedMedia}
-            onAddMedia={handleFileUpload}
-            onDeleteMedia={deleteMedia}
-            isEditable={isEdit || isCreate}
-          />
+          <div className="w-full lg:w-1/2 ">
+            <ProductMediaGallery
+              media={pack?.media}
+              selectedMedia={selectedMedia}
+              onSelectMedia={setSelectedMedia}
+              onAddMedia={handleFileUpload}
+              onDeleteMedia={deleteMedia}
+              isEditable={isEdit || isCreate}
+            />
+          </div>
         )}
 
         {/* RIGHT: Pack Info */}
@@ -517,6 +537,19 @@ export default function PackDetails() {
                   </p>
                 )}
               </>
+              <div className="mb-4">
+                <h3 className="font-semibold mb-1">Description :</h3>
+                {loading ? (
+                  <div className="h-16 md:h-24 mb-2 w-full bg-gray-200 rounded-lg animate-pulse"></div>
+                ) : (
+                  <p
+                    className="text-[16px] text-gray-500 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: FormatDescription(pack?.description || ""),
+                    }}
+                  />
+                )}
+              </div>
               {pack?.products?.map((product, pi) => (
                 <div
                   key={pi}
@@ -527,7 +560,7 @@ export default function PackDetails() {
                     <img
                       src={product.media[0].src}
                       alt={product.media[0].alt || "media"}
-                      className="w-auto h-52 object-cover rounded-md"
+                      className="w-40 h-40 md:w-48 md:h-48 object-cover rounded-md"
                     />
                   )}
 
@@ -539,17 +572,26 @@ export default function PackDetails() {
                     {/* Product colors */}
                     {product.colors?.length > 0 && (
                       <div className="flex gap-3">
-                        {product.colors.map((c, ci) => (
+                        {product.colors.map((c, i) => (
                           <button
-                            key={ci}
-                            className="w-12 h-12 rounded-full border overflow-hidden flex-shrink-0"
+                            key={i}
+                            className={classNames(
+                              selectedColor?.name === c.name
+                                ? "ring-2 ring-black ring-offset-2"
+                                : "ring-1 ring-gray-200",
+                              "md:w-16 md:h-16 w-12 h-12 rounded-full border overflow-hidden flex-shrink-0 transition"
+                            )}
                             style={{ borderColor: c.value ?? "#000" }}
+                            onClick={() => {
+                              setSelectedColor(c);
+                              if (c?.src) setSelectedMedia(c); // switch gallery preview to color image
+                            }}
                           >
                             {c.src ? (
                               <img
                                 src={c.src}
                                 alt={c.alt || c.name}
-                                className="w-full h-full object-cover rounded-full"
+                                className="w-full h-full object-cover rounded-full shadow"
                               />
                             ) : (
                               <div
@@ -564,11 +606,17 @@ export default function PackDetails() {
 
                     {/* Product sizes */}
                     {product.sizes?.length > 0 && (
-                      <div className="grid md:grid-cols-4 grid-cols-3 gap-2 mt-2">
+                      <div className="flex flex-wrap gap-2 mt-2">
                         {product.sizes.map((s, si) => (
                           <button
                             key={si}
-                            className="border rounded-md px-2 py-1 text-xs font-medium hover:border-[#87a736]"
+                            onClick={() => setSelectedSize(s)}
+                            className={classNames(
+                              selectedSize?.name === s.name
+                                ? "border-gray-900 bg-gray-900 text-white" // active
+                                : "border-gray-300 bg-white text-gray-700 hover:border-gray-500", // inactive
+                              "flex-shrink-0 border rounded-md px-3 py-2 text-sm font-medium transition"
+                            )}
                           >
                             {s.name}
                           </button>

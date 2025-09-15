@@ -111,7 +111,7 @@ export default function SpecialOfferCard() {
   ).toFixed(2);
   const savings = +(originalPrice - discountedPrice).toFixed(2);
 
-  const BASE_URL = "https://bargaouiserver.onrender.com"; // Change this to your real base URL
+  const API_BASE_URL_MEDIA = import.meta.env.VITE_API_BASE_URL_MEDIA;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -143,9 +143,9 @@ export default function SpecialOfferCard() {
 
       {/* Left Image Section */}
       <>
-        <div className="md:w-1/2 grid grid-cols-2 h-120 gap-2">
+        <div className="md:w-1/2 grid grid-cols-2 h-80 gap-2">
           {/* Left column with 1 large image */}
-          <div className="grid grid-rows-1 gap-2 h-120">
+          <div className="grid grid-rows-1 gap-2 h-80">
             {allImages.slice(0, 1).map((img, index) => (
               <div
                 key={index}
@@ -153,7 +153,7 @@ export default function SpecialOfferCard() {
                 onClick={() => openModal(index)}
               >
                 <img
-                  src={`${BASE_URL}${img.src}`}
+                  src={`${API_BASE_URL_MEDIA}${img.src}`}
                   alt={img.alt || product.Title || `Product Image ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -162,7 +162,7 @@ export default function SpecialOfferCard() {
           </div>
 
           {/* Right column with 2 stacked images */}
-          <div className="grid grid-rows-2 gap-2 h-120">
+          <div className="grid grid-rows-2 gap-2 h-80">
             {allImages.slice(1, 3).map((img, index) => (
               <div
                 key={index}
@@ -170,7 +170,7 @@ export default function SpecialOfferCard() {
                 onClick={() => openModal(index + 1)}
               >
                 <img
-                  src={`${BASE_URL}${img.src}`}
+                  src={`${API_BASE_URL_MEDIA}${img.src}`}
                   alt={img.alt || product.Title || `Product Image ${index + 2}`}
                   className="w-full h-60 object-cover"
                 />
@@ -214,7 +214,7 @@ export default function SpecialOfferCard() {
             )}
 
             <img
-              src={`${BASE_URL}${allImages[currentIndex].src}`}
+              src={`${API_BASE_URL_MEDIA}${allImages[currentIndex].src}`}
               alt={allImages[currentIndex].alt || product.Title}
               className="max-h-[90vh] max-w-[90vw] object-contain"
             />

@@ -15,7 +15,7 @@ export default function CustomModal({
   handleSubmit,
 }) {
   return (
-    <Dialog open={open} onClose={setOpen} className="relative z-10">
+    <Dialog open={open} onClose={setOpen} className="relative z-50">
       <DialogBackdrop className="fixed inset-0 bg-gray-500/75" />
 
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">

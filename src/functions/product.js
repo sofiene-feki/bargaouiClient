@@ -104,11 +104,10 @@ export const getProductsByCategory = async ({
   sort = "createdAt",
 }) => {
   const { data } = await axios.get(
-    `${API_BASE_URL}/category/${category}?page=${page}&itemsPerPage=${itemsPerPage}&sort=${sort}`
+    `${API_BASE_URL}/products/category/${category}?page=${page}&itemsPerPage=${itemsPerPage}&sort=${sort}`
   );
   return data;
 };
-
 // export const searchProducts = async (
 //   query,
 //   page,

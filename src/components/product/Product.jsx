@@ -130,7 +130,7 @@ export default function Product({ product, productsPerPage, loading }) {
           <Link
             key={product._id}
             to={`/product/${product.slug}`}
-            className="group relative flex flex-col overflow-hidden   border border-gray-300 transition-transform transform hover:scale-105 hover:shadow-2xl"
+            className="group relative flex flex-col overflow-hidden   border border-gray-300  hover:shadow-2xl"
           >
             {/* Product Image fills most of the card */}
             <div className="w-full flex-1 overflow-hidden bg-white">
@@ -193,7 +193,7 @@ export default function Product({ product, productsPerPage, loading }) {
                     <img
                       src={imageSrc}
                       alt={product.Title}
-                      className="w-full h-72 md:h-120 object-cover"
+                      className="w-full h-72 md:h-120 object-cover transition-transform transform hover:scale-105"
                     />
                   </div>
                 )}

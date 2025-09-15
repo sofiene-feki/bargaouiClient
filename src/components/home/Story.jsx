@@ -2,15 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { getBestSellers } from "../../functions/product"; // API call
-import Product from "../product/Product";
 import logoBlack from "../../assets/bragaouiBlack.png";
 import { Input, LoadingProduct, NextArrow, PrevArrow, Textarea } from "../ui";
-import { Link } from "react-router-dom";
-import video1 from "../../assets/video/video1.mp4";
-import video2 from "../../assets/video/video2.mp4";
-import video3 from "../../assets/video/video3.mp4";
-import video4 from "../../assets/video/video4.mp4";
 import {
   PlayIcon,
   PauseIcon,
@@ -25,6 +18,7 @@ import {
 } from "../../functions/storySlide";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
+import { useInView } from "react-intersection-observer";
 
 export default function Story() {
   const { userInfo, isAuthenticated } = useSelector((state) => state.user);
@@ -34,6 +28,8 @@ export default function Story() {
   const [loading, setLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [open, setOpen] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const [unmutedVideoId, setUnmutedVideoId] = useState(null); // only one unmuted video
   const [newSlide, setNewSlide] = useState({
     title: "",
     description: "",
@@ -61,6 +57,7 @@ export default function Story() {
         : formattedSlides;
 
       setSlides(newSlides);
+      setAutoPlay(true);
     } catch (err) {
       console.error("❌ Failed to fetch slides:", err);
     } finally {
@@ -153,6 +150,21 @@ export default function Story() {
     centerMode: false,
   };
 
+  const [videoSrc, setVideoSrc] = useState(null);
+
+  useEffect(() => {
+    if (!newSlide.video) {
+      setVideoSrc(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(newSlide.video);
+    setVideoSrc(url);
+
+    // Clean up old URL when component unmounts or file changes
+    return () => URL.revokeObjectURL(url);
+  }, [newSlide.video]);
+
   return (
     <div className="mx-auto md:mx-18  px-0 py-10 ">
       <h2 className="text-2xl md:text-4xl font-serif text-center my-4">
@@ -174,6 +186,9 @@ export default function Story() {
               handleDelete={handleDelete}
               isAuthenticated={isAuthenticated}
               userInfo={userInfo}
+              autoPlay={autoPlay}
+              unmutedVideoId={unmutedVideoId}
+              setUnmutedVideoId={setUnmutedVideoId}
             />
           ))}
         </Slider>
@@ -196,10 +211,10 @@ export default function Story() {
               {newSlide.video ? (
                 <video
                   controls
-                  autoPlay
+                  //autoPlay
                   loop
                   className="w-full h-full object-cover rounded-lg"
-                  src={URL.createObjectURL(newSlide.video)}
+                  src={videoSrc}
                 />
               ) : (
                 <div className="flex flex-col items-center justify-center text-gray-500">
@@ -291,6 +306,9 @@ const VideoSlide = ({
   handleDelete,
   isAuthenticated,
   userInfo,
+  autoPlay,
+  unmutedVideoId,
+  setUnmutedVideoId,
 }) => {
   if (slide.isCreate && isAuthenticated && userInfo) {
     return (
@@ -341,10 +359,31 @@ const VideoSlide = ({
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const { ref, inView } = useInView({ threshold: 0.5 });
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    if (inView) {
+      videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, [inView]);
+
+  // Only one video unmuted at a time
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (unmutedVideoId !== slide._id) {
+      videoRef.current.muted = true;
+      setIsMuted(true);
+    }
+  }, [unmutedVideoId]);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
-
     const video = videoRef.current;
 
     if (video.paused) {
@@ -358,27 +397,49 @@ const VideoSlide = ({
 
   const toggleMute = () => {
     if (!videoRef.current) return;
-    const newMuted = !videoRef.current.muted; // toggle current muted state
-    videoRef.current.muted = newMuted; // update video element
-    setIsMuted(newMuted); // sync state
+
+    const currentlyMuted = videoRef.current.muted;
+    if (currentlyMuted) {
+      // Unmute this video and mute others
+      setUnmutedVideoId(slide._id);
+      videoRef.current.muted = false;
+      setIsMuted(false);
+    } else {
+      // Mute this video
+      setUnmutedVideoId(null);
+      videoRef.current.muted = true;
+      setIsMuted(true);
+    }
   };
 
+  // Handle missing video
+  if (!slide.videoUrl)
+    return (
+      <div
+        ref={ref}
+        className="relative w-full h-[300px] md:h-[350px] bg-gray-200 flex items-center justify-center text-gray-500"
+      >
+        Video unavailable
+      </div>
+    );
+
   return (
-    <div className="relative w-full ">
-      {/* Video */}
-      <div className="relative w-full px-2 h-[300px] md:h-[350px] overflow-hidden">
+    <div className="relative w-full">
+      <div
+        ref={ref}
+        className="relative w-full h-[300px] md:h-[350px] px-2 overflow-hidden"
+      >
         <video
           ref={videoRef}
           src={slide.videoUrl}
-          autoPlay
           loop
           muted={isMuted}
           playsInline
           className="w-full h-full object-cover"
         />
 
-        {/* Controls Positioned on Video */}
-        <div className="absolute top-4 right-4 flex flex-col gap-3 z-10">
+        {/* Controls */}
+        <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
           <button
             onClick={togglePlay}
             className="bg-gray-50/70 text-gray-800 rounded-full p-2 transition"
@@ -399,12 +460,14 @@ const VideoSlide = ({
               <SpeakerWaveIcon className="w-5 h-5" />
             )}
           </button>
-          <button
-            onClick={() => handleDelete(slide._id)}
-            className="bg-gray-50/70 text-gray-800 rounded-full p-2 transition"
-          >
-            <TrashIcon className="w-5 h-5" />
-          </button>{" "}
+          {handleDelete && (
+            <button
+              onClick={() => handleDelete(slide._id)}
+              className="bg-gray-50/70 text-gray-800 rounded-full p-2 transition"
+            >
+              <TrashIcon className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -414,12 +477,14 @@ const VideoSlide = ({
         <p className="text-gray-600 px-4 text-sm md:text-base">
           {slide.description}
         </p>
-        <a
-          href={slide.link}
-          className="inline-block font-semibold underline hover:text-gray-800 transition-colors duration-300"
-        >
-          {slide.cta}
-        </a>
+        {slide.link && (
+          <a
+            href={slide.link}
+            className="inline-block font-semibold underline hover:text-gray-800 transition-colors duration-300"
+          >
+            {slide.cta || "Learn More"}
+          </a>
+        )}
       </div>
     </div>
   );
