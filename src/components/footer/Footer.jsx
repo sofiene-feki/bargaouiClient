@@ -31,7 +31,7 @@ export default function Footer() {
 artisanatbargaoui.com"
                   className="hover:underline text-[#87a736] transition-colors"
                 >
-                  artisanatbargaoui.com
+                  artisanatbargaoui@gmail.com
                 </a>
               </p>
             </div>
@@ -119,7 +119,7 @@ artisanatbargaoui.com"
             </h4>
             <iframe
               className="w-full  rounded-md border border-gray-300 shadow-md block"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d799.3889468714448!2d10.319203169598904!3d36.73322837306697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12fd4900684d8e41%3A0xbde3122ac8e80e90!2sSuper%20siesta%20Ezzahra%20Boumhel%20Hammam%20lif!5e0!3m2!1sen!2stn!4v1755178799756!5m2!1sen!2stn"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3197.659726120883!2d10.334292175545308!3d36.73073267161285!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12fd49c89b37a6a5%3A0x6a12cbc8089fe2ee!2sArtisanat%20Bargaoui!5e0!3m2!1sen!2stn!4v1757974902922!5m2!1sen!2stn"
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
