@@ -66,14 +66,21 @@ export default function Product({ product, productsPerPage, loading }) {
   // Get first color name or empty string
   const firstColor = product.colors?.[0] || "";
   const firstSize = product.sizes?.[0] || "M";
-
+  const originalPrice = product?.Price;
+  const promotion = product?.promotion || 0; // percentage
+  const discountedPrice = +(
+    originalPrice -
+    (originalPrice * promotion) / 100
+  ).toFixed(2);
+  const savings = +(originalPrice - discountedPrice).toFixed(2);
   const handleAddToCart = () => {
-    console.log("Adding to cart:", imageSrc);
+    const finalPrice = promotion > 0 ? discountedPrice : originalPrice;
     dispatch(
       addItem({
         productId: product._id,
         name: product.Title,
-        price: firstSize?.price ?? product.Price,
+        // price: firstSize?.price ?? product.Price,
+        price: finalPrice, // ✅ use discounted or original
         image: imageSrc,
         selectedSize: firstSize?.name ?? null,
         selectedSizePrice: firstSize?.price ?? null,
@@ -84,27 +91,6 @@ export default function Product({ product, productsPerPage, loading }) {
     );
     dispatch(openCart());
   };
-
-  if (view === "list") {
-    return (
-      <div className="flex space-x-4 p-4 border border-gray-100 rounded-md shadow-md hover:shadow-md">
-        <img
-          alt={imageAlt}
-          src={imageSrc}
-          className="w-54 h-54 object-cover rounded-md flex-shrink-0"
-        />
-        <div className="flex flex-col justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              <Link to={`/product/${product.Title}`}>{product.Title}</Link>
-            </h3>
-            <p className="text-sm text-gray-500">{firstColor}</p>
-          </div>
-          <p className="text-md font-medium text-gray-900">{product.price}</p>
-        </div>
-      </div>
-    );
-  }
 
   // Default grid view
   return (
@@ -173,13 +159,13 @@ export default function Product({ product, productsPerPage, loading }) {
 
                     return (
                       <div
-                        className="custom-dot "
+                        className="custom-dot"
                         style={{
                           width: "25px",
                           height: "4px",
                           borderRadius: "20%",
                           backgroundColor: bgColor,
-                          opacity: 0.3, // default low opacity
+                          opacity: 0.3,
                           transition: "opacity 0.3s ease",
                         }}
                       ></div>
@@ -189,37 +175,77 @@ export default function Product({ product, productsPerPage, loading }) {
               >
                 {/* Main product image */}
                 {mainMedia && (
-                  <div>
+                  <div className="relative">
                     <img
                       src={imageSrc}
                       alt={product.Title}
                       className="w-full h-72 md:h-120 object-cover transition-transform transform hover:scale-105"
                     />
+
+                    {/* ✅ Promotion Badge */}
+                    {product.promotion > 0 && (
+                      <div
+                        className="absolute top-4 left-4 text-white text-xs md:text-sm font-bold py-1 px-3 rounded-md shadow-lg z-10
+             bg-gradient-to-r from-red-500 via-red-600 to-red-500 bg-[length:200%_200%] animate-gradientMove
+             hover:scale-75 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                      >
+                        -{product.promotion}%
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {/* Color images */}
                 {product.colors?.map((color, i) => (
-                  <div key={color._id || i}>
+                  <div key={color._id || i} className="relative">
                     <img
                       src={`${API_BASE_URL_MEDIA}${color.src}`}
                       alt={color.name}
                       className="w-full h-72 md:h-120 object-cover"
                     />
+
+                    {/* ✅ Promotion Badge on color variations too */}
+                    {product.promotion > 0 && (
+                      <div
+                        className="absolute top-4 left-4 text-white text-xs md:text-sm font-bold py-1 px-3 rounded-md shadow-lg z-10
+             bg-gradient-to-r from-red-500 via-red-600 to-red-500 bg-[length:200%_200%] animate-gradientMove
+             hover:scale-75 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                      >
+                        -{product.promotion}%
+                      </div>
+                    )}
                   </div>
                 ))}
               </Slider>
             </div>
 
             {/* Text Under Image */}
-            <div className="bg-white md:px-3 px-1 text-left">
-              <div className="flex justify-between items-center pb-1" dir="rtl">
+            <div className="bg-white md:px-1 px-1">
+              <div className=" pb-1" dir="rtl">
                 <h3 className="md:text-lg truncate whitespace-nowrap text-base font-semibold text-gray-800 group-hover:text-[#87a736] transition-colors duration-300">
                   {product.Title}
                 </h3>
-                <p className="text-sm text-gray-500 whitespace-nowrap">
-                  {product.Price} د.ت
-                </p>
+                <div className="flex  gap-2">
+                  {product?.promotion > 0 ? (
+                    <>
+                      {" "}
+                      <span className="line-through text-gray-400 text-xl ">
+                        {originalPrice}{" "}
+                      </span>
+                      <div>
+                        <h3 className="text-xl md:text-4xl font-bold text-[#87a736]">
+                          {discountedPrice}{" "}
+                        </h3>
+                      </div>
+                    </>
+                  ) : (
+                    <span className=" text-gray-800 font-semibold text-xl ">
+                      {originalPrice}{" "}
+                    </span>
+                  )}
+
+                  <span className="text-gray-800 "> د.ت</span>
+                </div>
               </div>
             </div>
           </Link>
