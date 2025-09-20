@@ -1,7 +1,11 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import React from "react";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  CheckIcon,
+  ShoppingCartIcon,
+} from "@heroicons/react/24/outline";
 import { openCart } from "../../redux/ui/cartDrawer";
 import { addItem } from "../../redux/cart/cartSlice";
 import { useDispatch } from "react-redux";
@@ -84,27 +88,6 @@ export default function Pack({ product, productsPerPage, loading }) {
     dispatch(openCart());
   };
 
-  if (view === "list") {
-    return (
-      <div className="flex space-x-4 p-4 border border-gray-100 rounded-md shadow-md hover:shadow-md">
-        <img
-          alt={imageAlt}
-          src={imageSrc}
-          className="w-54 h-54 object-cover rounded-md flex-shrink-0"
-        />
-        <div className="flex flex-col justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              <Link to={`/pack/${product.slug}`}>{product.title}</Link>
-            </h3>
-            <p className="text-sm text-gray-500">{firstColor}</p>
-          </div>
-          <p className="text-md font-medium text-gray-900">{product.price}</p>
-        </div>
-      </div>
-    );
-  }
-
   // Default grid view
   return (
     <div>
@@ -125,60 +108,55 @@ export default function Pack({ product, productsPerPage, loading }) {
           </div>
         </div>
       ) : (
-        <div className="group relative  cursor-pointer overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300">
-          <Link
-            key={product._id}
-            to={`/pack/${product.slug}`}
-            className="block relative"
-          >
-            {/* Image / Slider */}
-            <div className="relative w-full h-120 md:h-120 bg-gray-50 overflow-hidden">
-              <Slider
-                {...{
-                  dots: true,
-                  infinite: true,
-                  autoplay: true,
-                  autoplaySpeed: 3000,
-                  speed: 800,
-                  slidesToShow: 1,
-                  slidesToScroll: 1,
-                  arrows: false,
-                  fade: true,
-                }}
-              >
-                {mainMedia && (
-                  <div>
-                    <img
-                      src={imageSrc}
-                      alt={product.Title}
-                      className="w-full h-120 md:h-120 object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                )}
-                {product.colors?.map((color, i) => (
-                  <div key={color._id || i}>
-                    <img
-                      src={`${import.meta.env.VITE_API_BASE_URL_MEDIA}${
-                        color.src
-                      }`}
-                      alt={color.name}
-                      className="w-full h-72 md:h-120 object-cover"
-                    />
-                  </div>
-                ))}
-              </Slider>
+        <div className="group relative border border-[#e5e7eb]/40 rounded-2xl overflow-hidden bg-white/60 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col">
+          {/* Image */}
+          <div className="w-full h-64 overflow-hidden relative">
+            <img
+              src={imageSrc}
+              alt={product.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0d1b2a]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
 
-              {/* Gradient overlay with title & price */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3 flex justify-between items-center">
-                <p className="text-[#87a736] font-bold text-sm md:text-base">
-                  {product.price} د.ت
-                </p>
-                <h3 className="text-white text-sm md:text-base font-semibold truncate">
-                  {product.title}
-                </h3>
-              </div>
+          {/* Content */}
+          <div className="flex flex-col flex-1 p-4" dir="rtl">
+            {/* Title */}
+            <h3 className="text-lg font-bold text-[#0d1b2a] mb-3 line-clamp-1">
+              {product.title}
+            </h3>
+
+            {/* Product list */}
+            <ul className="space-y-1 mb-4">
+              {product.products.map((p, i) => (
+                <li
+                  key={i}
+                  className="flex items-center gap-2 text-sm text-gray-700"
+                >
+                  <span className="w-5 h-5 flex items-center justify-center rounded-full bg-[#d4af37]/20 text-[#d4af37]">
+                    <CheckIcon className="w-4 h-4" />
+                  </span>
+                  <span className="truncate">{p.Title}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Price */}
+            <div className="mb-4">
+              <span className="inline-block px-4 py-1 rounded-full bg-gradient-to-r from-[#d4af37] to-[#f5d76e] text-[#0d1b2a] font-bold text-lg shadow-md">
+                {product.price} د.ت
+              </span>
             </div>
-          </Link>
+
+            {/* CTA */}
+            <Link key={product._id} to={`/pack/${product.slug}`}>
+              {" "}
+              <button className="w-full py-3 rounded-full bg-gradient-to-r from-[#d4af37] to-[#f5d76e] text-[#0d1b2a] font-semibold text-sm tracking-wide shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all">
+                عرض التفاصيل
+              </button>
+            </Link>
+          </div>
         </div>
       )}
     </div>

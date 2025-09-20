@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// const API_BASE_URL = "http://localhost:8000/api";
 
 // Create a new product
 export const productCreate = async (formData) => {
@@ -55,9 +56,9 @@ export const searchProducts = async ({
     itemsPerPage,
   });
 };
-export const getNewArrivals = async () => {
+export const getNewArrivals = async (filter) => {
   try {
-    return await axios.get(`${API_BASE_URL}/products/new-arrivals`);
+    return await axios.get(`${API_BASE_URL}/products/new-arrivals/${filter}`);
   } catch (error) {
     console.error("❌ Error fetching new arrivals:", error);
     throw error;

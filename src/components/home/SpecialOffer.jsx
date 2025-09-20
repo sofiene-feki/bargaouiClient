@@ -131,12 +131,12 @@ export default function SpecialOfferCard() {
     setCurrentIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
 
   return (
-    <div className=" h-auto  mx-auto md:mx-10 bg-white border border-gray-200 shadow-xl overflow-hidden flex flex-col md:flex-row hover:shadow-2xl transition-shadow duration-300 relative">
-      {/* Discount Ribbon */}
+    <div className="h-auto mx-auto md:mx-10 bg-white border border-gray-200 shadow-xl overflow-hidden flex flex-col md:flex-row hover:shadow-2xl transition-shadow duration-300 relative">
+      {/* ✅ Discount Ribbon - gold theme */}
       <div
         className="absolute top-4 left-4 text-white text-xs md:text-sm font-bold py-1 px-3 rounded-md shadow-lg z-10
-             bg-gradient-to-r from-red-500 via-red-600 to-red-500 bg-[length:200%_200%] animate-gradientMove
-             hover:scale-75 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+       bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 bg-[length:200%_200%] animate-gradientMove
+       hover:scale-105 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
       >
         - {promotion}%
       </div>
@@ -175,7 +175,7 @@ export default function SpecialOfferCard() {
                   className="w-full h-60 object-cover"
                 />
 
-                {/* Overlay if more images exist on the last visible image */}
+                {/* Overlay if more images exist */}
                 {index === 1 && allImages.length > 3 && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-2xl font-bold">
                     +{allImages.length - 3}
@@ -223,13 +223,13 @@ export default function SpecialOfferCard() {
       </>
 
       {/* Right Info Section */}
-      <div className="md:w-1/2 flex  flex-col justify-between p-2 md:p-4 ">
+      <div className="md:w-1/2 flex flex-col justify-between p-2 md:p-4">
         {/* Header */}
         <div className="space-y-1 md:space-y-3">
           <div className="flex justify-between items-start">
             {/* Title + Price */}
             <div className="relative space-y-1 md:space-y-2 my-2 md:my-0">
-              <h2 className="text-red-500  font-extrabold text-2xl md:text-4xl tracking-tight">
+              <h2 className="text-[#c5a23e] font-extrabold text-2xl md:text-4xl tracking-tight">
                 Promotion
               </h2>
 
@@ -250,7 +250,7 @@ export default function SpecialOfferCard() {
                   <span className="line-through text-gray-400 text-xl md:ml-0 ml-3 mt-1">
                     {originalPrice}{" "}
                   </span>
-                  <span className="text-xs text-red-500 font-semibold">
+                  <span className="text-xs text-[#c5a23e] font-semibold">
                     Économisez {savings} DT
                   </span>
                 </div>
@@ -258,10 +258,10 @@ export default function SpecialOfferCard() {
             </div>
 
             {/* Countdown */}
-            <div className="bg-white text-gray-800  px-3 py-2 text-center shadow-lg">
+            <div className="bg-white text-gray-800 px-3 py-2 text-center shadow-lg border border-[#c5a23e]/40 rounded-md">
               <p className="text-xs md:text-base font-medium">
                 Reste:{" "}
-                <span className="font-semibold">{timeLeft.days}jours</span>
+                <span className="font-semibold">{timeLeft.days} jours</span>
               </p>
               <div className="flex items-center gap-1 mt-1">
                 <ClockSquare value={timeLeft.hours} />
@@ -270,6 +270,7 @@ export default function SpecialOfferCard() {
               </div>
             </div>
           </div>
+
           {loading ? (
             <div className="mt-4 h-8 w-full bg-gray-200 rounded-lg animate-pulse"></div>
           ) : (
@@ -281,8 +282,7 @@ export default function SpecialOfferCard() {
           {loading ? (
             <div className="mt-4 h-18 w-full bg-gray-200 rounded-lg animate-pulse"></div>
           ) : (
-            <div className="">
-              {" "}
+            <div>
               <p
                 className={`text-gray-600 whitespace-pre-wrap ${
                   expanded ? "" : "line-clamp-3 md:line-clamp-6"
@@ -293,7 +293,7 @@ export default function SpecialOfferCard() {
               />
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-blue-600 font-semibold hover:underline"
+                className="text-[#c5a23e] font-semibold hover:underline"
               >
                 {expanded ? "Afficher moins" : "Afficher plus ..."}
               </button>
@@ -307,8 +307,8 @@ export default function SpecialOfferCard() {
             onChange={(e) => handleSelect(e.target.value)}
             value={selectedSlug}
             className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm placeholder-gray-400
-             focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none
-             transition mb-4"
+           focus:border-[#87a736] focus:ring-2 focus:ring-[#87a736] focus:outline-none
+           transition mb-4"
           >
             <option value="">-- Choose a product --</option>
             {titles.map((item) => (
@@ -316,13 +316,13 @@ export default function SpecialOfferCard() {
                 {item.Title}
               </option>
             ))}
-
-            {/* Add more categories as needed */}
           </select>
         ) : (
           <Link to={`product/${product?.slug}`} className="block w-full">
             <button
-              className="w-full flex items-center justify-center gap-3 md:mt-0 mt-2 px-6 py-2 text-white text-lg font-bold rounded-lg shadow-lg bg-[#87a736]  hover:scale-101 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 focus:ring-4 focus:ring-green-300"
+              className="w-full flex items-center justify-center gap-3 md:mt-0 mt-2 px-6 py-2 text-white text-lg font-bold rounded-lg shadow-lg 
+          bg-gradient-to-r from-[#87a736] to-[#6d8f2e]
+          hover:scale-105 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 focus:ring-4 focus:ring-[#c5a23e]/50"
               aria-label="Acheter Medico Pillow"
             >
               <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />

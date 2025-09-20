@@ -5,10 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { getNewArrivals } from "../../functions/product"; // API call
 import Product from "../product/Product";
 import { LoadingProduct, NextArrow, PrevArrow } from "../ui";
-import new1 from "../../assets/new1.jpg";
-import new2 from "../../assets/new2.jpg";
-import new3 from "../../assets/new3.jpg";
-import women from "../../assets/women.jpg";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import { Link } from "react-router-dom";
 
@@ -42,11 +39,13 @@ export default function NewArrivals() {
     return { ...input, media: normalizedMedia };
   };
 
+  const [filter, setFilter] = useState("homme");
+
   useEffect(() => {
     const fetchNewArrivals = async () => {
       setLoading(true);
       try {
-        const { data } = await getNewArrivals();
+        const { data } = await getNewArrivals(filter);
         const normalizedProducts = normalizeMediaSrc(data.products || []);
         setProducts(normalizedProducts);
         console.log(
@@ -61,15 +60,40 @@ export default function NewArrivals() {
     };
 
     fetchNewArrivals();
-  }, []);
+  }, [filter]);
 
   return (
-    <div className=" mx-auto md:mx-10 py-10">
-      <h2 className="text-3xl md:text-4xl font-bold font-serif  text-gray-800 my-4 text-center">
-        Nouvelle Collection 2025
+    <div className="mx-auto md:mx-10 py-10">
+      {/* ✅ Section Title */}
+      <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 my-6 text-center">
+        Nouvelle Collection <span className="text-[#87a736]">2025</span>
       </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-1">
+      {/* ✅ Filter Tabs */}
+      <div className="flex justify-center gap-8 mb-8">
+        {["homme", "Femme", "enfant"].map((category) => (
+          <button
+            key={category}
+            onClick={() => setFilter(category)}
+            className={`text-base md:text-lg font-semibold flex items-center gap-1 transition-colors duration-300
+          ${
+            filter === category
+              ? "text-[#87a736]"
+              : "text-gray-700 hover:text-gray-900"
+          }`}
+          >
+            {category}
+            <ChevronDownIcon
+              className={`w-4 h-4 transition-colors duration-300 ${
+                filter === category ? "text-[#87a736]" : "text-gray-500"
+              }`}
+            />
+          </button>
+        ))}
+      </div>
+
+      {/* ✅ Products Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4  px-1">
         {products.map((product) => (
           <Product key={product._id || product.slug} product={product} />
         ))}

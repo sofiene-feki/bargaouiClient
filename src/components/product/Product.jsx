@@ -112,33 +112,27 @@ export default function Product({ product, productsPerPage, loading }) {
           </div>
         </div>
       ) : (
-        <div className="group relative rounded-md cursor-pointer">
+        <div className="group relative rounded-xl cursor-pointer">
           <Link
             key={product._id}
             to={`/product/${product.slug}`}
-            className="group relative flex flex-col overflow-hidden   border border-gray-300  hover:shadow-2xl"
+            className="group relative flex flex-col overflow-hidden border border-[#e5e7eb]/40 rounded-xl bg-white/60 backdrop-blur-sm hover:shadow-2xl transition-all"
           >
-            {/* Product Image fills most of the card */}
+            {/* Product Image */}
             <div className="w-full flex-1 overflow-hidden bg-white">
               <Slider
                 {...{
                   dots: true,
                   infinite: true,
                   autoplay: true,
-                  autoplaySpeed: 3000,
+                  autoplaySpeed: 6000,
                   speed: 800,
                   slidesToShow: 1,
                   slidesToScroll: 1,
                   arrows: false,
                   fade: true,
                   appendDots: (dots) => (
-                    <div
-                      style={{
-                        backgroundColor: "#fff",
-                        padding: "4px",
-                        marginBottom: "4px",
-                      }}
-                    >
+                    <div style={{ padding: "4px", marginBottom: "4px" }}>
                       <ul
                         style={{
                           margin: "0px",
@@ -152,11 +146,10 @@ export default function Product({ product, productsPerPage, loading }) {
                     </div>
                   ),
                   customPaging: (i) => {
-                    let bgColor = "#ccc"; // default for main image
+                    let bgColor = "#ccc";
                     if (i > 0 && product.colors && product.colors[i - 1]) {
                       bgColor = product.colors[i - 1].value;
                     }
-
                     return (
                       <div
                         className="custom-dot"
@@ -165,7 +158,7 @@ export default function Product({ product, productsPerPage, loading }) {
                           height: "4px",
                           borderRadius: "20%",
                           backgroundColor: bgColor,
-                          opacity: 0.3,
+                          opacity: 0.4,
                           transition: "opacity 0.3s ease",
                         }}
                       ></div>
@@ -173,21 +166,20 @@ export default function Product({ product, productsPerPage, loading }) {
                   },
                 }}
               >
-                {/* Main product image */}
+                {/* Main image */}
                 {mainMedia && (
                   <div className="relative">
                     <img
                       src={imageSrc}
                       alt={product.Title}
-                      className="w-full h-72 md:h-120 object-cover transition-transform transform hover:scale-105"
+                      className="w-full h-72 md:h-120 object-cover transition-transform transform group-hover:scale-105"
                     />
 
-                    {/* ✅ Promotion Badge */}
+                    {/* Promotion Badge */}
                     {product.promotion > 0 && (
                       <div
-                        className="absolute top-4 left-4 text-white text-xs md:text-sm font-bold py-1 px-3 rounded-md shadow-lg z-10
-             bg-gradient-to-r from-red-500 via-red-600 to-red-500 bg-[length:200%_200%] animate-gradientMove
-             hover:scale-75 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                        className="absolute top-4 left-4 text-[#0d1b2a] text-xs md:text-sm font-bold py-1 px-3 rounded-md shadow-lg z-10
+                bg-gradient-to-r from-[#d4af37] to-[#f5d76e] animate-pulse transition-all duration-300"
                       >
                         -{product.promotion}%
                       </div>
@@ -195,7 +187,7 @@ export default function Product({ product, productsPerPage, loading }) {
                   </div>
                 )}
 
-                {/* Color images */}
+                {/* Color variations */}
                 {product.colors?.map((color, i) => (
                   <div key={color._id || i} className="relative">
                     <img
@@ -203,13 +195,10 @@ export default function Product({ product, productsPerPage, loading }) {
                       alt={color.name}
                       className="w-full h-72 md:h-120 object-cover"
                     />
-
-                    {/* ✅ Promotion Badge on color variations too */}
                     {product.promotion > 0 && (
                       <div
-                        className="absolute top-4 left-4 text-white text-xs md:text-sm font-bold py-1 px-3 rounded-md shadow-lg z-10
-             bg-gradient-to-r from-red-500 via-red-600 to-red-500 bg-[length:200%_200%] animate-gradientMove
-             hover:scale-75 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                        className="absolute top-4 left-4 text-[#0d1b2a] text-xs md:text-sm font-bold py-1 px-3 rounded-md shadow-lg z-10
+                bg-gradient-to-r from-[#d4af37] to-[#f5d76e] animate-pulse transition-all duration-300"
                       >
                         -{product.promotion}%
                       </div>
@@ -219,45 +208,48 @@ export default function Product({ product, productsPerPage, loading }) {
               </Slider>
             </div>
 
-            {/* Text Under Image */}
-            <div className="bg-white md:px-1 px-1">
-              <div className=" pb-1" dir="rtl">
-                <h3 className="md:text-lg truncate whitespace-nowrap text-base font-semibold text-gray-800 group-hover:text-[#87a736] transition-colors duration-300">
+            {/* Text Content */}
+            <div className="bg-white/90 px-2 md:px-3">
+              <div dir="rtl">
+                <h3 className="md:text-lg truncate whitespace-nowrap text-base font-semibold text-[#0d1b2a] group-hover:text-[#d4af37] transition-colors duration-300">
                   {product.Title}
                 </h3>
-                <div className="flex  gap-2">
+                <div className="flex items-center gap-2">
                   {product?.promotion > 0 ? (
                     <>
-                      {" "}
-                      <span className="line-through text-gray-400 text-xl ">
-                        {originalPrice}{" "}
+                      <span className="line-through text-gray-400 text-xl">
+                        {originalPrice}
                       </span>
-                      <div>
-                        <h3 className="text-xl md:text-4xl font-bold text-[#87a736]">
-                          {discountedPrice}{" "}
-                        </h3>
-                      </div>
+                      <h3 className="text-xl md:text-3xl font-bold text-[#d4af37]">
+                        {discountedPrice}
+                      </h3>
                     </>
                   ) : (
-                    <span className=" text-gray-800 font-semibold text-xl ">
-                      {originalPrice}{" "}
+                    <span className="text-[#0d1b2a] font-semibold text-xl">
+                      {originalPrice}
                     </span>
                   )}
-
-                  <span className="text-gray-800 "> د.ت</span>
+                  <span className="text-[#0d1b2a]">د.ت</span>
                 </div>
               </div>
             </div>
           </Link>
 
+          {/* CTA Add to cart */}
           <button
             onClick={handleAddToCart}
-            className="flex items-center justify-center border border-gray-300 gap-2 w-full px-2 py-2 mt-1
-          bg-white text-gray-800 font-semibold  shadow-sm  md:text-base text-xs
-          hover:bg-[#87a736] hover:text-white transition duration-300 ease-in-out"
+            className="flex items-center justify-center gap-2 w-full md:px-4 px-2 md:py-3 py-2 mt-1
+    bg-gradient-to-r from-[#d4af37] to-[#f5d76e] text-[#0d1b2a] font-semibold rounded-md
+    shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
           >
-            <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />
-            Ajouter au panier
+            {/* ✅ Icône responsive */}
+            <ShoppingCartIcon
+              className="w-5 h-5 md:w-6 md:h-6"
+              aria-hidden="true"
+            />
+
+            {/* ✅ Texte responsive */}
+            <span className="text-sm md:text-base">Ajouter au panier</span>
           </button>
         </div>
       )}
