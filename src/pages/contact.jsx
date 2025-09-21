@@ -9,14 +9,17 @@ export default function Contact() {
   return (
     <section className="bg-white">
       {/* Hero Section */}
-      <div className="relative bg-gray-100 shadow-lg text-gray-900 py-8 md:py-12">
-        <div className="max-w-7xl mx-auto md:px-6 px-2 ">
+      <div className="relative bg-gray-100 shadow-lg text-gray-900 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto md:px-6 px-2">
           <h1 className="text-3xl md:text-5xl font-bold">
-            Contactez <span className="text-[#87a736]">Super Siesta</span>
+            Contactez <span className="text-[#87a736]">Artisanat Bargaoui</span>
           </h1>
-          <p className="mt-2 text-base md:text-lg text-gray-900">
-            Une question, un projet ou besoin d’un conseil ? Nous sommes là pour
-            vous aider.
+          <p className="mt-2 text-base md:text-lg text-gray-900 leading-relaxed">
+            Vous souhaitez en savoir plus sur nos{" "}
+            <strong>vêtements traditionnels tunisiens</strong>
+            (جُبّة تونسية, القمرية, القرماسود, السكرودة) ou passer une commande
+            personnalisée ? Notre équipe est à votre écoute pour répondre à vos
+            questions et vous accompagner dans vos choix.
           </p>
         </div>
       </div>

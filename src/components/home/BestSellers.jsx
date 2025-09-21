@@ -69,11 +69,15 @@ export default function BestSellers() {
         Meilleur Vente 2025
       </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-1">
-        {products.map((product) => (
-          <Product key={product._id || product.slug} product={product} />
-        ))}
-      </div>
+      {loading ? (
+        <LoadingProduct length={isMobile ? 1 : 4} cols={4} />
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-1">
+          {products.map((product) => (
+            <Product key={product._id || product.slug} product={product} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

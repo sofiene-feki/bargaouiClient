@@ -93,11 +93,15 @@ export default function NewArrivals() {
       </div>
 
       {/* ✅ Products Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4  px-1">
-        {products.map((product) => (
-          <Product key={product._id || product.slug} product={product} />
-        ))}
-      </div>
+      {loading ? (
+        <LoadingProduct length={isMobile ? 1 : 4} cols={4} />
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4  px-1">
+          {products.map((product) => (
+            <Product key={product._id || product.slug} product={product} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
