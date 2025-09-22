@@ -65,12 +65,12 @@ export default function NewArrivals() {
   return (
     <div className="mx-auto md:mx-10 py-10">
       {/* ✅ Section Title */}
-      <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 my-6 text-center">
+      <h2 className="text-3xl md:text-4xl font-semiBold tracking-tight text-gray-900 my-4 text-center">
         Nouvelle Collection <span className="text-[#87a736]">2025</span>
       </h2>
 
       {/* ✅ Filter Tabs */}
-      <div className="flex justify-center gap-8 mb-8">
+      <div className="flex justify-center gap-8 mb-4">
         {["homme", "Femme", "enfant"].map((category) => (
           <button
             key={category}

@@ -96,7 +96,7 @@ export default function Header() {
           className={`absolute inset-0 flex items-center justify-center transition-all duration-700 pointer-events-none`}
         >
           <p
-            className={`transition-all duration-700 transform font-bold font-serif ${
+            className={`transition-all duration-700 transform${
               isHome
                 ? isScrolled
                   ? "text-base scale-75 text-black translate-x-[-85px] md:translate-x-[-500px]"

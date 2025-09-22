@@ -148,6 +148,28 @@ export default function CartDrawer() {
                         )}
                       </div>
 
+                      {/* Pack Products */}
+                      {item.type === "pack" && (
+                        <div className="cart-products space-y-2">
+                          {item.products?.map((prod, index) => (
+                            <div
+                              key={index}
+                              className="flex flex-wrap items-center gap-2 text-sm md:text-base"
+                            >
+                              <span className="text-gray-500">
+                                {prod.name || "Unnamed Product"} :
+                              </span>
+                              {prod.selectedSize && (
+                                <span>{prod.selectedSize}</span>
+                              )}
+                              {prod.selectedColor && (
+                                <span>| {prod.selectedColor}</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
                       {/* Quantity & Price */}
                       <div className="flex items-center justify-between mt-2 md:mt-3">
                         <div className="flex items-center space-x-1">
@@ -222,7 +244,7 @@ export default function CartDrawer() {
               ou{" "}
               <button
                 type="button"
-                onClick={() => dispatch(closeCart())}
+                onClick={() => console.log(items)}
                 className="font-medium text-[#87a736] hover:text-bg-[#87a736]"
               >
                 Continuer vos achats

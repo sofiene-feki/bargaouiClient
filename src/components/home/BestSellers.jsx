@@ -64,8 +64,8 @@ export default function BestSellers() {
   }, []);
 
   return (
-    <div className=" mx-auto md:mx-10 py-10">
-      <h2 className="text-3xl md:text-4xl font-bold font-serif  text-gray-800 my-4 text-center">
+    <div className=" mx-auto md:mx-10 pb-10">
+      <h2 className="text-3xl md:text-4xl font-semiBold tracking-tight text-gray-900 my-4 text-center">
         Meilleur Vente 2025
       </h2>
 

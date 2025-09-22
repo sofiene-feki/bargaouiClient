@@ -90,7 +90,7 @@ export default function Packs() {
 
   return (
     <div className="mx-auto md:mx-18  px-0 py-10 ">
-      <h2 className="text-3xl md:text-4xl font-bold font-serif  text-gray-800 my-4 text-center">
+      <h2 className="text-3xl md:text-4xl font-semiBold tracking-tight text-gray-900 my-4 text-center">
         Nos pack
       </h2>
 

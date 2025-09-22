@@ -166,8 +166,8 @@ export default function Story() {
   }, [newSlide.video]);
 
   return (
-    <div className="mx-auto md:mx-18  px-0 py-10 ">
-      <h2 className="text-2xl md:text-4xl font-serif text-center my-4">
+    <div className="mx-auto md:mx-18  px-0 pb-10 ">
+      <h2 className="text-3xl md:text-4xl font-semiBold tracking-tight text-gray-900 text-center my-4">
         Artisanat Bargaoui Services
       </h2>
 

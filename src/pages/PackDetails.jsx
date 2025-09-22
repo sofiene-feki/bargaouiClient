@@ -25,7 +25,11 @@ import {
   ListboxOptions,
 } from "@headlessui/react";
 import { getAllProductTitles } from "../functions/product";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/24/outline";
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  ShoppingCartIcon,
+} from "@heroicons/react/24/outline";
 import { Input, Textarea } from "../components/ui";
 import { FormatDescription } from "../components/ui"; // Assuming you have this utility function
 
@@ -57,15 +61,39 @@ export default function PackDetails() {
 
   const [pack, setPack] = useState(isCreate ? emptyPack : null);
   const [loading, setLoading] = useState(true);
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selections, setSelections] = useState({});
+
+  const handleColorSelect = (productId, color) => {
+    setSelections((prev) => ({
+      ...prev,
+      [pack._id]: {
+        ...prev[pack._id],
+        [productId]: {
+          ...prev[pack._id]?.[productId],
+          color,
+        },
+      },
+    }));
+  };
+
+  const handleSizeSelect = (productId, size) => {
+    setSelections((prev) => ({
+      ...prev,
+      [pack._id]: {
+        ...prev[pack._id],
+        [productId]: {
+          ...prev[pack._id]?.[productId],
+          size,
+        },
+      },
+    }));
+  };
 
   // gallery
   const [selectedMedia, setSelectedMedia] = useState(null);
 
   // per-product user choices in VIEW mode
   // { [idx]: { color: <colorObj|null>, size: <string|null> } }
-  const [selectedChoices, setSelectedChoices] = useState({});
   const dispatch = useDispatch();
 
   // media handlers
@@ -211,66 +239,7 @@ export default function PackDetails() {
     }).format(price || 0);
 
   // selection helpers (VIEW mode)
-  const selectColor = (prodIdx, colorObj) => {
-    setSelectedChoices((prev) => ({
-      ...prev,
-      [prodIdx]: { ...(prev[prodIdx] || {}), color: colorObj },
-    }));
-  };
-  const selectSize = (prodIdx, sizeStr) => {
-    setSelectedChoices((prev) => ({
-      ...prev,
-      [prodIdx]: { ...(prev[prodIdx] || {}), size: sizeStr },
-    }));
-  };
 
-  // ✅ require a color if that product has colors; require a size if it has sizes
-  const allSelected =
-    Array.isArray(pack?.products) &&
-    pack.products.length > 0 &&
-    pack.products.every((p, idx) => {
-      const choice = selectedChoices[idx] || {};
-      const colorOk =
-        !Array.isArray(p.color) || p.color.length === 0 || !!choice.color;
-      const sizeOk =
-        !Array.isArray(p.sizes) || p.sizes.length === 0 || !!choice.size;
-      return colorOk && sizeOk;
-    });
-
-  const handleAddPackToCart = () => {
-    const cartPayload = {
-      type: "pack", // helpful flag for your cart UI
-      title: pack?.title || "",
-      price: Number(pack?.price) || 0,
-      description: pack?.description || "",
-      media: {
-        src: selectedMedia?.src || pack?.media?.[0]?.src || "", // a safe fallback
-      },
-      products: (pack?.products || []).map((p, idx) => {
-        const choice = selectedChoices[idx] || {};
-        return {
-          title: p.title,
-          // send the selected color; keep the whole object so you have name/value/src if needed
-          color: choice.color
-            ? {
-                name: choice.color.name || "",
-                // value: choice.color.value || "",
-                // src: choice.color.src || "",
-                // _id: choice.color._id ?? null,
-                // type: choice.color.type || "image",
-                // alt: choice.color.alt || ""
-              }
-            : null,
-          // send the selected size string (if any)
-          size: choice.size || null,
-        };
-      }),
-    };
-
-    // Send to cart
-    dispatch(addItem(cartPayload));
-    dispatch(openCart());
-  };
   const [query, setQuery] = useState("");
   const [options, setOptions] = useState([]); // all fetched titles
   const [selectedTitles, setSelectedTitles] = useState([]); // selected values
@@ -307,6 +276,51 @@ export default function PackDetails() {
       alert("Failed to delete product");
     }
     navigate("/shop"); // redirect to shop page
+  };
+
+  const [error, setError] = useState("");
+
+  const handleAddPackToCart = () => {
+    const packSelections = selections[pack._id] || {};
+
+    const selectedProducts = pack.products.map((p) => ({
+      productId: p._id,
+      name: p.Title,
+      selectedColor: packSelections[p._id]?.color?.name ?? null,
+      selectedSize: packSelections[p._id]?.size?.name ?? null,
+      selectedSizePrice: packSelections[p._id]?.size?.price ?? null,
+      hasColorOptions: Array.isArray(p.colors) && p.colors.length > 0,
+      hasSizeOptions: Array.isArray(p.sizes) && p.sizes.length > 0,
+    }));
+
+    // Only check products that actually have options
+    const invalidProduct = selectedProducts.find(
+      (p) =>
+        (p.hasColorOptions && !p.selectedColor) ||
+        (p.hasSizeOptions && !p.selectedSize)
+    );
+
+    if (invalidProduct) {
+      setError("Veuillez sélectionner toutes les options de votre pack !");
+      return; // stop adding to cart
+    }
+
+    setError(""); // clear error
+
+    const finalPrice = pack.price;
+
+    dispatch(
+      addItem({
+        type: "pack",
+        packId: pack._id,
+        name: pack.title,
+        price: finalPrice,
+        image: pack.media?.[0]?.src ?? null,
+        products: selectedProducts,
+      })
+    );
+
+    dispatch(openCart());
   };
 
   return (
@@ -576,14 +590,15 @@ export default function PackDetails() {
                           <button
                             key={i}
                             className={classNames(
-                              selectedColor?.name === c.name
+                              selections[pack._id]?.[product._id]?.color
+                                ?.name === c.name
                                 ? "ring-2 ring-black ring-offset-2"
                                 : "ring-1 ring-gray-200",
-                              "md:w-16 md:h-16 w-12 h-12 rounded-full border overflow-hidden flex-shrink-0 transition"
+                              "w-12 h-12 md:w-16 md:h-16 rounded-full border overflow-hidden flex-shrink-0 transition"
                             )}
                             style={{ borderColor: c.value ?? "#000" }}
                             onClick={() => {
-                              setSelectedColor(c);
+                              handleColorSelect(product._id, c);
                               if (c?.src) setSelectedMedia(c); // switch gallery preview to color image
                             }}
                           >
@@ -610,9 +625,10 @@ export default function PackDetails() {
                         {product.sizes.map((s, si) => (
                           <button
                             key={si}
-                            onClick={() => setSelectedSize(s)}
+                            onClick={() => handleSizeSelect(product._id, s)}
                             className={classNames(
-                              selectedSize?.name === s.name
+                              selections[pack._id]?.[product._id]?.size
+                                ?.name === s.name
                                 ? "border-gray-900 bg-gray-900 text-white" // active
                                 : "border-gray-300 bg-white text-gray-700 hover:border-gray-500", // inactive
                               "flex-shrink-0 border rounded-md px-3 py-2 text-sm font-medium transition"
@@ -627,6 +643,24 @@ export default function PackDetails() {
                 </div>
               ))}
             </>
+          )}
+          {isView && (
+            <div className="sticky bottom-0 left-0 right-0 z-50 bg-white/30 backdrop-blur-xl shadow-md md:block p-4">
+              {error && (
+                <p className="text-red-600 font-medium mb-2 text-center">
+                  {error}
+                </p>
+              )}
+              <button
+                onClick={handleAddPackToCart}
+                className="w-full flex items-center justify-center gap-3 rounded-lg 
+                 bg-green-600 px-6 py-3 text-white font-semibold shadow-md 
+                 hover:bg-green-700 hover:shadow-lg active:scale-95 transition"
+              >
+                <ShoppingCartIcon className="h-6 w-6 text-white animate-pulse" />
+                Ajouter au panier
+              </button>
+            </div>
           )}
         </div>
       </div>
