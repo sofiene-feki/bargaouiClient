@@ -4,10 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { EyeIcon, TrashIcon, WrenchIcon } from "@heroicons/react/24/outline";
 //import { createOrder, getOrders } from "../../functions/order";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import Tooltip from "@mui/material/Tooltip";
 import { GridActionsCellItem } from "@mui/x-data-grid";
-import { deleteOrder, getOrders } from "../functions/order";
+import { deleteOrder, getOrders, sendToDelivery } from "../functions/order";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import CustomToolbar from "../components/ui/CustomToolbar";
@@ -25,6 +25,7 @@ const Order = () => {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   const fetchOrders = async () => {
     try {
@@ -36,9 +37,21 @@ const Order = () => {
         clientName: order.customer?.fullName || "", // customer name
         email: order.customer?.email || "", // email if stored
         phone: order.customer?.phone || "",
-        adresse: order.customer?.address || "",
+        adresse: `${order.customer?.address || ""}, ${
+          order.customer?.gouvernorat || ""
+        }`,
+        gouvernorat: order.customer?.gouvernorat || "",
         status: order.status || "",
         productCount: order.items?.length || 0, // number of items
+        product:
+          order.items
+            ?.map(
+              (item) =>
+                `${item.name} (${item.selectedColor?.trim() || ""} - ${
+                  item.selectedSize?.trim() || ""
+                })`
+            )
+            .join(", ") || "",
         subtotal: order.subtotal || 0,
         shipping: order.shipping || 0,
         total: order.total || 0,
@@ -76,10 +89,22 @@ const Order = () => {
     { field: "index", headerName: <strong>#</strong>, width: 70 },
     { field: "clientName", headerName: <strong>Client</strong>, width: 160 },
     { field: "adresse", headerName: <strong>Adresse</strong>, width: 200 },
+
+    {
+      field: "gouvernorat",
+      headerName: <strong>gouvernorat</strong>,
+      width: 200,
+    },
+
     { field: "phone", headerName: <strong>Télephone</strong>, width: 160 },
     {
       field: "productCount",
       headerName: <strong>Nbr produit</strong>,
+      width: 110,
+    },
+    {
+      field: "product",
+      headerName: <strong>product</strong>,
       width: 110,
     },
     {
@@ -182,6 +207,49 @@ const Order = () => {
     fetchTitles();
   }, []);
 
+  const apiRef = useGridApiRef();
+
+  const handleSendSelectedRows = async () => {
+    try {
+      // 1. Get selected rows from DataGrid
+      const selectedRowsMap = apiRef.current.getSelectedRows();
+      const selectedRowsArray = Array.from(selectedRowsMap.values());
+
+      if (!selectedRowsArray || selectedRowsArray.length === 0) {
+        console.warn("⚠️ No rows selected");
+        return;
+      }
+
+      // 2. Transform rows into Delivery API payload
+      const orders = selectedRowsArray.map((row) => ({
+        Client: {
+          nom: row.clientName || "Test Client",
+          gouvernerat: row.gouvernorat || "TUNIS", // from customer.gouvernorat
+          ville: row.gouvernorat || "TUNIS", // duplicate gouvernorat as ville
+          adresse: row.adresse || "Adresse Test", // only street address
+          telephone: row.phone || "00000000",
+          telephone2: "",
+        },
+        Produit: {
+          article: row.product || "Test Article", // full product string
+          prix: row.subtotal || 0,
+          designation: row.product || "Designation Test", // same as product
+          nombreArticle: row.productCount || 1,
+          commentaire: "Commande envoyée depuis app",
+        },
+      }));
+
+      console.log("📦 Payload for delivery API:", orders);
+
+      // 3. Send payload to delivery API
+      const res = await sendToDelivery(orders);
+
+      console.log("✅ Orders sent to delivery:", res);
+    } catch (error) {
+      console.error("❌ Error sending selected rows to delivery:", error);
+    }
+  };
+
   return (
     <div>
       <div className="mx-auto max-w-7xl mx-auto py-15 md:py-20 px-1 md:px-4">
@@ -211,12 +279,21 @@ const Order = () => {
             rows={orders}
             columns={columns}
             loading={loading}
+            checkboxSelection
             pageSize={10}
             slots={{ toolbar: CustomToolbar }}
             slotProps={{
-              toolbar: { products },
+              toolbar: { products, handleSendSelectedRows },
             }}
             showToolbar
+            apiRef={apiRef}
+            initialState={{
+              columns: {
+                columnVisibilityModel: {
+                  gouvernorat: false,
+                },
+              },
+            }}
           />
         </Box>
       </div>

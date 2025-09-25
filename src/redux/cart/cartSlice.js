@@ -31,9 +31,7 @@ const cartSlice = createSlice({
       state.totalPrice = state.items.reduce(
         (total, item) =>
           total +
-          (item.selectedSizePrice != null
-            ? item.selectedSizePrice
-            : item.price) *
+          (item.selectedSizePrice > 0 ? item.selectedSizePrice : item.price) *
             item.quantity,
         0
       );
@@ -53,9 +51,7 @@ const cartSlice = createSlice({
         state.totalPrice = state.items.reduce(
           (total, item) =>
             total +
-            (item.selectedSizePrice != null
-              ? item.selectedSizePrice
-              : item.price) *
+            (item.selectedSizePrice > 0 ? item.selectedSizePrice : item.price) *
               item.quantity,
           0
         );
@@ -74,7 +70,7 @@ const cartSlice = createSlice({
         existingItem.quantity++;
         state.totalQuantity++;
         state.totalPrice +=
-          existingItem.selectedSizePrice != null
+          existingItem.selectedSizePrice > 0
             ? existingItem.selectedSizePrice
             : existingItem.price;
       }
@@ -93,7 +89,7 @@ const cartSlice = createSlice({
           existingItem.quantity--;
           state.totalQuantity--;
           state.totalPrice -=
-            existingItem.selectedSizePrice != null
+            existingItem.selectedSizePrice > 0
               ? existingItem.selectedSizePrice
               : existingItem.price;
         } else {
@@ -109,7 +105,7 @@ const cartSlice = createSlice({
           state.totalPrice = state.items.reduce(
             (total, item) =>
               total +
-              (item.selectedSizePrice != null
+              (item.selectedSizePrice > 0
                 ? item.selectedSizePrice
                 : item.price) *
                 item.quantity,
@@ -144,9 +140,7 @@ const cartSlice = createSlice({
         state.totalPrice = state.items.reduce(
           (total, item) =>
             total +
-            (item.selectedSizePrice != null
-              ? item.selectedSizePrice
-              : item.price) *
+            (item.selectedSizePrice > 0 ? item.selectedSizePrice : item.price) *
               item.quantity,
           0
         );

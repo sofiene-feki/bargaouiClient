@@ -1,12 +1,13 @@
 import axios from "axios";
 
+// Your app’s own API (backend)
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // ✅ Get all orders
 export const getOrders = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/orders`);
-    return response; // you can use response.data in your components
+    return response;
   } catch (error) {
     console.error("❌ Error fetching orders:", error.message);
     throw error;
@@ -58,6 +59,20 @@ export const deleteOrder = async (id) => {
     return response;
   } catch (error) {
     console.error(`❌ Error deleting order ${id}:`, error.message);
+    throw error;
+  }
+};
+
+// ✅ Send orders to delivery company (bulk-create)
+export const sendToDelivery = async (orders) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/orders/delivery`,
+      orders
+    );
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error sending orders to delivery:", error.message);
     throw error;
   }
 };

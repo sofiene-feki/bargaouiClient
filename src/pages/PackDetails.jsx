@@ -312,7 +312,7 @@ export default function PackDetails() {
     dispatch(
       addItem({
         type: "pack",
-        packId: pack._id,
+        productId: pack._id,
         name: pack.title,
         price: finalPrice,
         image: pack.media?.[0]?.src ?? null,

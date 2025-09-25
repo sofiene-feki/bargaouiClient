@@ -41,6 +41,7 @@ import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { createOrder } from "../../functions/order";
 import Input from "./Input";
 import { HiOutlineCheck, HiOutlineX } from "react-icons/hi";
+import { LiaShippingFastSolid } from "react-icons/lia";
 
 const StyledQuickFilter = styled(QuickFilter)({
   display: "grid",
@@ -68,7 +69,11 @@ const StyledTextField = styled(TextField)(({ theme, ownerState }) => ({
   // transition: theme.transitions.create(["width", "opacity"]),
 }));
 
-export default function CustomToolbar({ products }) {
+export default function CustomToolbar({
+  products,
+  handleSubmitOrders,
+  handleSendSelectedRows,
+}) {
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [searchExpanded, setSearchExpanded] = useState(false); // <- track search expand
   const [modalOpen, setModalOpen] = useState(false); // <-- modal state
@@ -184,7 +189,7 @@ export default function CustomToolbar({ products }) {
   return (
     <Toolbar sx={{ px: 0, py: 0 }}>
       <div className="w-full h-full px-1 md:px-2 flex items-center justify-between bg-gray-100">
-        <div>
+        <div className="gap-2">
           <button
             onClick={handleModalOpen} // <-- open modal
             className={`items-center gap-1 px-1 md:px-2 py-2 bg-green-50 text-green-700 rounded-xl shadow-sm text-xs md:text-xs hover:bg-green-100 transition
@@ -192,6 +197,14 @@ export default function CustomToolbar({ products }) {
           >
             <PlusIcon className="w-4 h-4 md:h-6 md:w-6" />
             Crée une commande
+          </button>
+          <button
+            onClick={handleSendSelectedRows}
+            className={`items-center gap-1 px-1 md:px-2 py-2 bg-green-50 text-green-700 rounded-xl shadow-sm text-xs md:text-xs hover:bg-green-100 transition
+            ${searchExpanded ? "hidden sm:inline-flex" : "inline-flex"}`}
+          >
+            <LiaShippingFastSolid className="w-4 h-4 md:h-6 md:w-6" />
+            Synchronistion
           </button>
         </div>
 

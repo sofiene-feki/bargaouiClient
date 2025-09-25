@@ -96,10 +96,10 @@ export default function Header() {
           className={`absolute inset-0 flex items-center justify-center transition-all duration-700 pointer-events-none`}
         >
           <p
-            className={`transition-all duration-700 transform${
+            className={`transition-all duration-700 transform text-4xl font-medium ${
               isHome
                 ? isScrolled
-                  ? "text-base scale-75 text-black translate-x-[-85px] md:translate-x-[-500px]"
+                  ? "text-xl scale-75 text-black translate-x-[-85px] md:translate-x-[-520px]"
                   : "text-4xl md:text-9xl mt-25 drop-shadow-[0_4px_6px_rgba(0,0,0,0.9)] md:mt-50 text-white scale-100 translate-x-0"
                 : "text-xl text-black scale-75 translate-x-[-70px] md:translate-x-[-500px]"
             }`}
