@@ -232,7 +232,7 @@ const Order = () => {
         },
         Produit: {
           article: row.product || "Test Article", // full product string
-          prix: row.subtotal || 0,
+          prix: row.total || 0,
           designation: row.product || "Designation Test", // same as product
           nombreArticle: row.productCount || 1,
           commentaire: "Commande envoyée depuis app",
