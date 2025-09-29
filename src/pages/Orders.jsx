@@ -20,14 +20,18 @@ import {
   MdCancel,
   MdHourglassEmpty,
 } from "react-icons/md";
+import { toast } from "react-toastify";
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedRows, setSelectedRows] = useState([]);
+
+  const [loadingSelectedRows, setLoadingSelectedRows] = useState(false);
 
   const fetchOrders = async () => {
+    setLoading(true);
+
     try {
       const res = await getOrders(); // fetch all orders from API
 
@@ -210,13 +214,15 @@ const Order = () => {
   const apiRef = useGridApiRef();
 
   const handleSendSelectedRows = async () => {
+    setLoadingSelectedRows(true);
+
     try {
-      // 1. Get selected rows from DataGrid
+      // 1. Get selected rows
       const selectedRowsMap = apiRef.current.getSelectedRows();
       const selectedRowsArray = Array.from(selectedRowsMap.values());
 
       if (!selectedRowsArray || selectedRowsArray.length === 0) {
-        console.warn("⚠️ No rows selected");
+        toast.warning("⚠️ No rows selected");
         return;
       }
 
@@ -224,16 +230,16 @@ const Order = () => {
       const orders = selectedRowsArray.map((row) => ({
         Client: {
           nom: row.clientName || "Test Client",
-          gouvernerat: row.gouvernorat || "TUNIS", // from customer.gouvernorat
-          ville: row.gouvernorat || "TUNIS", // duplicate gouvernorat as ville
-          adresse: row.adresse || "Adresse Test", // only street address
+          gouvernerat: row.gouvernorat || "TUNIS",
+          ville: row.gouvernorat || "TUNIS",
+          adresse: row.adresse || "Adresse Test",
           telephone: row.phone || "00000000",
           telephone2: "",
         },
         Produit: {
-          article: row.product || "Test Article", // full product string
+          article: row.product || "Test Article",
           prix: row.total || 0,
-          designation: row.product || "Designation Test", // same as product
+          designation: row.product || "Designation Test",
           nombreArticle: row.productCount || 1,
           commentaire: "Commande envoyée depuis app",
         },
@@ -241,12 +247,30 @@ const Order = () => {
 
       console.log("📦 Payload for delivery API:", orders);
 
-      // 3. Send payload to delivery API
-      const res = await sendToDelivery(orders);
-
-      console.log("✅ Orders sent to delivery:", res);
+      // 3. Wrap API call with toast.promise and show error message
+      await toast.promise(sendToDelivery(orders), {
+        pending: "⏳ Sending orders...",
+        success: "✅ Orders sent successfully!",
+        error: {
+          render({ data }) {
+            // data is the error object
+            const errMsg =
+              data?.response?.data?.message || // for Axios backend errors
+              data?.message || // normal JS errors
+              "❌ Failed to send orders"; // fallback
+            return errMsg;
+          },
+        },
+      });
     } catch (error) {
       console.error("❌ Error sending selected rows to delivery:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Unexpected error occurred"
+      );
+    } finally {
+      setLoadingSelectedRows(false);
     }
   };
 
@@ -283,7 +307,11 @@ const Order = () => {
             pageSize={10}
             slots={{ toolbar: CustomToolbar }}
             slotProps={{
-              toolbar: { products, handleSendSelectedRows },
+              toolbar: {
+                products,
+                handleSendSelectedRows,
+                loadingSelectedRows,
+              },
             }}
             showToolbar
             apiRef={apiRef}

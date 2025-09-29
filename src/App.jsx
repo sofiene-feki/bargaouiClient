@@ -19,6 +19,7 @@ import Footer from "./components/footer/Footer";
 import Category from "./pages/catrgory";
 import Contact from "./pages/contact";
 import Login from "./pages/login";
+import { ToastContainer } from "react-toastify";
 
 const LazyHome = lazy(() => import("./pages/home"));
 const LazyShop = lazy(() => import("./pages/shop"));
@@ -64,7 +65,19 @@ function App() {
         }
       >
         {shouldShowHeader && <Header />}
-
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          // transition={Bounce}
+        />
         <Cart />
 
         <Routes>

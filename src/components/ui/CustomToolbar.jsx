@@ -73,6 +73,7 @@ export default function CustomToolbar({
   products,
   handleSubmitOrders,
   handleSendSelectedRows,
+  loadingSelectedRows,
 }) {
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [searchExpanded, setSearchExpanded] = useState(false); // <- track search expand
@@ -199,12 +200,19 @@ export default function CustomToolbar({
             Crée une commande
           </button>
           <button
+            disabled={loadingSelectedRows}
             onClick={handleSendSelectedRows}
-            className={`items-center gap-1 px-1 md:px-2 py-2 bg-green-50 text-green-700 rounded-xl shadow-sm text-xs md:text-xs hover:bg-green-100 transition
-            ${searchExpanded ? "hidden sm:inline-flex" : "inline-flex"}`}
+            className={`items-center gap-1 px-1 md:px-2 py-2 rounded-xl shadow-sm text-xs md:text-xs transition
+    ${
+      loadingSelectedRows
+        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+        : "bg-green-50 text-green-700 hover:bg-green-100"
+    }
+    ${searchExpanded ? "hidden sm:inline-flex" : "inline-flex"}
+  `}
           >
             <LiaShippingFastSolid className="w-4 h-4 md:h-6 md:w-6" />
-            Synchronistion
+            {loadingSelectedRows ? "Envoi..." : "Synchronisation"}
           </button>
         </div>
 
