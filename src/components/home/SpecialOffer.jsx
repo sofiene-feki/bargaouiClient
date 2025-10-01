@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ShoppingCartIcon } from "@heroicons/react/24/solid";
-import medico from "../../assets/category/medicop.jpg";
-import eco from "../../assets/eco+.png";
+
 import { useSelector } from "react-redux";
 import {
   getAllProductTitles,

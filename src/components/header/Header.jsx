@@ -9,6 +9,7 @@ import {
   Transition,
 } from "@headlessui/react";
 import {
+  ArrowLeftIcon,
   Bars3Icon,
   MagnifyingGlassIcon,
   ShoppingBagIcon,
@@ -17,6 +18,8 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/bragaoui.png";
 import logoBlack from "../../assets/bragaouiBlack.png";
+import jebba from "../../assets/category/jebba.webp";
+import kamis from "../../assets/category/kamis.jpeg";
 import { useDispatch, useSelector } from "react-redux";
 import { closeCart, openCart } from "../../redux/ui/cartDrawer";
 import { signOut } from "firebase/auth";
@@ -61,6 +64,24 @@ export default function Header() {
     { name: "Mes commandes", href: "orders" },
     { name: "Sign out", href: "#" },
   ];
+
+  const categories = {
+    Homme: [
+      { name: "Jebba", image: jebba },
+      { name: "Kamis", image: kamis },
+    ],
+    Femme: [
+      { name: "Robe", image: "/images/robe.jpg" },
+      { name: "Chaussures", image: "/images/chaussures.jpg" },
+    ],
+    Enfants: [
+      { name: "Jouets", image: "/images/jouets.jpg" },
+      { name: "Vêtements", image: "/images/vetements.jpg" },
+    ],
+  };
+
+  const [activeCategory, setActiveCategory] = useState(null);
+
   const handleSignOut = async () => {
     try {
       await signOut(auth); // Firebase logout
@@ -182,94 +203,102 @@ export default function Header() {
               onClose={() => setMobileMenuOpen(false)}
               position="right"
             >
-              <nav className="flex flex-col h-full bg-white shadow-lg p-6">
+              <nav className="flex flex-col h-full bg-white shadow-lg p-6 overflow-y-auto">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-bold text-gray-800">Menu</h2>
-
-                  <button
-                    className="p-2 text-gray-600 hover:text-gray-900"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <XMarkIcon className="h-6 w-6" />
-                  </button>
-                </div>
-
-                {/* Main Navigation */}
-                <ul className="space-y-4">
-                  {navigation.map((item) => (
-                    <li key={item.name}>
-                      <Link
-                        to={item.href}
-                        cl
-                        LinkssName="block text-gray-700 hover:text-green-600 font-medium transition"
+                  {activeCategory ? (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setActiveCategory(null)}
+                        className="p-1 text-gray-600 hover:text-gray-900"
+                      >
+                        <ArrowLeftIcon className="h-5 w-5" />
+                      </button>
+                      <h2 className="text-lg font-bold text-gray-800">
+                        {activeCategory}
+                      </h2>
+                    </div>
+                  ) : (
+                    <>
+                      <h2 className="text-lg font-bold text-gray-800">Menu</h2>
+                      <button
+                        className="p-2 text-gray-600 hover:text-gray-900"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        {item.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* Divider */}
-                <div className="border-t border-gray-200 my-6"></div>
-
-                {/* Categories Section */}
-                <div>
-                  <h3 className="text-md font-semibold text-gray-800 mb-4">
-                    Catégories
-                  </h3>
-                  <ul className="space-y-3">
-                    <li>
-                      <a
-                        href="/category/imprimante"
-                        className="flex items-center gap-3 text-gray-700 hover:text-green-600 font-medium transition"
-                      >
-                        <img
-                          src="/icons/printer.svg"
-                          alt="Imprimante"
-                          className="w-5 h-5"
-                        />
-                        Homme
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="/category/photocopieur"
-                        className="flex items-center gap-3 text-gray-700 hover:text-green-600 font-medium transition"
-                      >
-                        <img
-                          src="/icons/copier.svg"
-                          alt="Photocopieur"
-                          className="w-5 h-5"
-                        />
-                        Femme
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="/category/consommable"
-                        className="flex items-center gap-3 text-gray-700 hover:text-green-600 font-medium transition"
-                      >
-                        <img
-                          src="/icons/ink.svg"
-                          alt="Consommable"
-                          className="w-5 h-5"
-                        />
-                        Enfants
-                      </a>
-                    </li>
-                  </ul>
+                        <XMarkIcon className="h-6 w-6" />
+                      </button>
+                    </>
+                  )}
                 </div>
 
-                {/* Bottom CTA */}
-                <div className="mt-auto pt-6">
-                  <a
-                    href="/contact"
-                    className="block text-center bg-green-600 text-white py-3 rounded-lg shadow hover:bg-green-700 transition"
-                  >
-                    Nous Contacter
-                  </a>
-                </div>
+                {!activeCategory && (
+                  <>
+                    <ul className="space-y-4">
+                      {navigation.map((item) => (
+                        <li key={item.name}>
+                          <Link
+                            to={item.href}
+                            className="block text-gray-700 hover:text-green-600 font-medium transition"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {item.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="border-t border-gray-200 my-6"></div>
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">
+                        Catégories
+                      </h3>
+                      <ul className="space-y-3">
+                        {Object.keys(categories).map((cat) => (
+                          <li key={cat}>
+                            <button
+                              onClick={() => setActiveCategory(cat)}
+                              className="flex items-center gap-3 text-gray-700 hover:text-green-600 font-medium transition w-full text-left"
+                            >
+                              {cat}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                {/* Subcategory view with images */}
+                {activeCategory && (
+                  <div className="grid grid-cols-2 sm:grid-cols-2 gap-6 mt-4">
+                    {categories[activeCategory].map((sub) => (
+                      <div
+                        key={sub.name}
+                        className=" rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col"
+                      >
+                        {/* Image */}
+                        <img
+                          src={sub.image}
+                          alt={sub.name}
+                          className="w-full h-80 object-cover"
+                        />
+
+                        {/* Title + Voir tous row */}
+                        <div className="p-4 flex items-center justify-between">
+                          <h3 className="font-semibold text-gray-700">
+                            {sub.name}
+                          </h3>
+                          <Link
+                            to={`/category/${activeCategory.toLowerCase()}/${sub.name.toLowerCase()}`}
+                            className="text-green-600 font-medium hover:underline"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            Voir tous
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </nav>
             </CustomDialog>
 

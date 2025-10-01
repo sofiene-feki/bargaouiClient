@@ -54,6 +54,7 @@ export default function CheckoutPage() {
     };
     try {
       // Send order to server
+      console.log(orderData);
       const response = await createOrder(orderData);
       console.log("✅ Order placed successfully:", response);
 

@@ -142,25 +142,55 @@ export default function OrderDetail() {
                   <tr key={idx} className="border-t">
                     <td className="p-2 border text-center">{idx + 1}</td>
                     <td className="p-2 border text-left">
-                      <div>{item.name}</div>
-                      {item.selectedColor && (
-                        <div className="text-xs text-gray-500">
-                          Couleur: {item.selectedColor}
+                      {/* If it's a pack, show sub-products */}
+                      {item.type === "pack" ? (
+                        <div>
+                          <div className="font-semibold">{item.name}</div>
+                          <ul className="ml-3 mt-1 list-disc text-sm text-gray-600">
+                            {item.products.map((p, pIdx) => (
+                              <li key={pIdx}>
+                                {p.name}
+                                {p.selectedSize && (
+                                  <span className="ml-2 text-gray-500">
+                                    | Taille: {p.selectedSize}
+                                  </span>
+                                )}
+                                {p.selectedColor && (
+                                  <span className="ml-2 text-gray-500">
+                                    | Couleur: {p.selectedColor}
+                                  </span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                      )}
-                      {item.selectedSize && (
-                        <div className="text-xs text-gray-500">
-                          Taille: {item.selectedSize}
+                      ) : (
+                        // Normal product
+                        <div>
+                          <div>{item.name}</div>
+                          {item.selectedColor && (
+                            <div className="text-xs text-gray-500">
+                              Couleur: {item.selectedColor}
+                            </div>
+                          )}
+                          {item.selectedSize && (
+                            <div className="text-xs text-gray-500">
+                              Taille: {item.selectedSize}
+                            </div>
+                          )}
                         </div>
                       )}
                     </td>
-                    <td className="p-2 border text-right">{unitPrice} dt</td>
+
+                    {/* Example price/qty column (if you want to keep them) */}
                     <td className="p-2 border text-center">{item.quantity}</td>
-                    <td className="p-2 border text-right">{totalPrice} dt</td>
+                    <td className="p-2 border text-center">{unitPrice} dt</td>
+                    <td className="p-2 border text-center">{totalPrice} dt</td>
                   </tr>
                 );
               })}
             </tbody>
+
             <tfoot>
               <tr>
                 <td colSpan="4" className="p-2 text-right font-bold border">

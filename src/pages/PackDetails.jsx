@@ -8,7 +8,7 @@ import {
 } from "react-icons/hi";
 import ProductMediaGallery from "../components/product/ProductMediaGallery";
 import { FaShippingFast } from "react-icons/fa";
-import { createPack, getPack, removePack } from "../functions/pack";
+import { createPack, getPack, removePack, updatePack } from "../functions/pack";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "../redux/cart/cartSlice";
 import { openCart } from "../redux/ui/cartDrawer";
@@ -123,8 +123,6 @@ export default function PackDetails() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
     try {
       const formData = new FormData();
       formData.append("title", pack.title);
@@ -195,7 +193,7 @@ export default function PackDetails() {
     };
 
     fetchPack();
-  }, [slug, isCreate]);
+  }, [slug, isCreate, currentMode]);
 
   // update/edit
   const handleUpdate = async () => {
@@ -206,13 +204,7 @@ export default function PackDetails() {
       formData.append("price", Number(pack.price) || 0);
       formData.append(
         "products",
-        JSON.stringify(
-          (pack.products || []).map((p) => ({
-            title: p.title,
-            color: p.color || [],
-            sizes: p.sizes || [],
-          }))
-        )
+        JSON.stringify(pack.products.map((p) => p._id)) // only IDs
       );
 
       const existingMedia = (pack.media || [])
@@ -223,8 +215,9 @@ export default function PackDetails() {
       (pack.media || []).forEach(
         (m) => m?.file && formData.append("mediaFiles", m.file)
       );
-
+      console.log(formData);
       await updatePack(slug, formData);
+
       setCurrentMode("view");
     } catch (err) {
       console.error("❌ Error updating pack:", err);
@@ -348,10 +341,16 @@ export default function PackDetails() {
                 </button>
 
                 <button
-                  onClick={handleSubmit}
+                  onClick={() => {
+                    if (currentMode === "create") {
+                      handleSubmit(); // 👉 create product
+                    } else if (currentMode === "edit") {
+                      handleUpdate(); // 👉 update product
+                    }
+                  }}
                   className="flex md:text-base text-xs items-center md:gap-2 gap-1 md:px-4 px-2 md:py-2 py-1 bg-green-50 text-green-600  
-                  focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-400 
-                  rounded-xl shadow-sm hover:bg-green-100 transition"
+                           focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-400 
+                           rounded-xl shadow-sm hover:bg-green-100 transition"
                 >
                   <HiOutlineCheck className="h-5 w-5" />
                   <span>Enregistrer</span>
