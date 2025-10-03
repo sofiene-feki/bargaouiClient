@@ -8,6 +8,8 @@ import Product from "../components/product/Product";
 import Pagination from "../components/shop/Pagination";
 import { setCurrentPage } from "../redux/shopFilters/pageOptions";
 import { LoadingProduct } from "../components/ui";
+import Pack from "../components/product/Pack";
+import { getPacksByCategory } from "../functions/pack";
 
 export default function Category() {
   const { Category } = useParams();
@@ -16,6 +18,7 @@ export default function Category() {
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [packs, setPacks] = useState([]);
 
   const { currentPage, productsPerPage, sortOption } = useSelector(
     (state) => state.pageOptions
@@ -49,27 +52,42 @@ export default function Category() {
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await getProductsByCategory({
+        // fetch products
+        const productData = await getProductsByCategory({
           category: Category,
           page: currentPage,
           itemsPerPage: productsPerPage,
           sort: sortOption,
         });
 
-        const normalized = normalizeMediaSrc(data.products || []);
-        setProducts(normalized);
-        setTotalPages(data.totalPages);
+        const normalizedProducts = normalizeMediaSrc(
+          productData.products || []
+        );
+        setProducts(normalizedProducts);
+        setTotalPages(productData.totalPages);
+        setTotalProducts(productData.totalProducts);
+
+        // fetch packs
+        const packData = await getPacksByCategory({
+          category: Category,
+          page: currentPage,
+          itemsPerPage: productsPerPage,
+          sort: sortOption,
+        });
+
+        const normalizedPacks = normalizeMediaSrc(packData.packs || []);
+        setPacks(normalizedPacks);
       } catch (err) {
-        console.error("❌ Error fetching products:", err);
+        console.error("❌ Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
-    console.log(Category, "this is the Category");
-    fetchProducts();
+
+    fetchData();
   }, [Category, currentPage, productsPerPage, sortOption]);
 
   if (loading) return <p>Loading products...</p>;
@@ -105,6 +123,14 @@ export default function Category() {
                     : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10 xl:gap-x-8"
                 }
               >
+                {packs.map((pack) => (
+                  <Pack
+                    key={pack._id}
+                    product={pack}
+                    loading={loading}
+                    productsPerPage={productsPerPage}
+                  />
+                ))}
                 {products.map((product) => (
                   <Product
                     key={product._id}

@@ -50,14 +50,9 @@ export default function Filters({ mobileFiltersOpen, setMobileFiltersOpen }) {
       id: "category",
       name: "Category",
       options: [
-        { value: "soft+", label: "soft+" },
-        { value: "venise+", label: "venise+" },
-        { value: "medico+", label: "medico+" },
-        { value: "relax+", label: "relax+" },
-        { value: "tendresse+", label: "tendresse+" },
-        { value: "topRelax+", label: "topRelax+" },
-        { value: "oreiller", label: "oreiller" },
-        { value: "protege", label: "protege" },
+        { value: "homme", label: "Homme" },
+        { value: "femme", label: "femme" },
+        { value: "enfant", label: "enfant" },
       ],
     },
     {

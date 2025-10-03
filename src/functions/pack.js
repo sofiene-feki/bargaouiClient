@@ -24,3 +24,19 @@ export const updatePack = async (id, formData) =>
 // DELETE Pack
 export const removePack = async (id) =>
   await axios.delete(`${API_BASE_URL}/pack/${id}`);
+
+export const getPacksByCategory = async ({
+  category,
+  page,
+  itemsPerPage,
+  sort,
+}) => {
+  return await axios
+    .post(`${API_BASE_URL}/pack/category`, {
+      category,
+      page,
+      itemsPerPage,
+      sort,
+    })
+    .then((res) => res.data);
+};

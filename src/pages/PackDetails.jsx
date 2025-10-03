@@ -12,18 +12,6 @@ import { createPack, getPack, removePack, updatePack } from "../functions/pack";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "../redux/cart/cartSlice";
 import { openCart } from "../redux/ui/cartDrawer";
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
-  Field,
-  Label,
-  Listbox,
-  ListboxButton,
-  ListboxOption,
-  ListboxOptions,
-} from "@headlessui/react";
 import { getAllProductTitles } from "../functions/product";
 import {
   CheckIcon,
@@ -32,6 +20,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Input, Textarea } from "../components/ui";
 import { FormatDescription } from "../components/ui"; // Assuming you have this utility function
+import PackInfoForm from "../components/product/PackInfoForm";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -54,6 +43,7 @@ export default function PackDetails() {
   const emptyPack = {
     title: "",
     description: "",
+    category: "",
     products: [], // will hold [{ _id, Title, slug, colors, sizes }]
     price: 0,
     media: [],
@@ -129,6 +119,7 @@ export default function PackDetails() {
       formData.append("price", pack.price);
       formData.append("description", pack.description);
       formData.append("products", JSON.stringify(pack.products));
+      formData.append("category", pack.category);
 
       if (pack.media && pack.media.length > 0) {
         pack.media.forEach((m) => formData.append("mediaFiles", m.file));
@@ -184,6 +175,12 @@ export default function PackDetails() {
         const normalizedPack = normalizeMediaSrc(data);
         setPack(normalizedPack);
         setSelectedMedia(normalizedPack.media?.[0] || "");
+        setSelectedTitles(
+          normalizedPack?.products.map((p) => ({
+            Title: p.Title,
+            name: p.name,
+          }))
+        );
         console.log("✅ Pack fetched:", normalizedPack);
       } catch (error) {
         console.error("❌ Error fetching pack:", error);
@@ -201,6 +198,7 @@ export default function PackDetails() {
       const formData = new FormData();
       formData.append("title", pack.title || "");
       formData.append("description", pack.description || "");
+      formData.append("category", pack.category || "");
       formData.append("price", Number(pack.price) || 0);
       formData.append(
         "products",
@@ -236,7 +234,6 @@ export default function PackDetails() {
   const [query, setQuery] = useState("");
   const [options, setOptions] = useState([]); // all fetched titles
   const [selectedTitles, setSelectedTitles] = useState([]); // selected values
-
   // Fetch all product titles once
   useEffect(() => {
     setLoading(true);
@@ -400,23 +397,31 @@ export default function PackDetails() {
           {/* Title / Price / Desc */}
           {isEdit || isCreate ? (
             <>
-              <Input
+              <PackInfoForm
+                pack={pack}
+                setPack={setPack}
+                options={options}
+                setSelectedTitles={setSelectedTitles}
+                selectedTitles={selectedTitles}
+                handleBasicChange={handleBasicChange}
+              />
+              {/* <Input
                 label="Titre"
                 type="text"
                 value={pack?.title || ""}
                 onChange={(e) => handleBasicChange("title", e.target.value)}
-              />
+              /> */}
 
-              <Input
+              {/* <Input
                 label="Price"
                 type="number"
                 min="0"
                 step="1"
                 value={pack?.price || 0}
                 onChange={(e) => handleBasicChange("price", e.target.value)}
-              />
+              /> */}
 
-              <Textarea
+              {/* <Textarea
                 label="Description"
                 rows={4}
                 className="w-full border border-gray-300 rounded-lg p-2 mt-1"
@@ -424,97 +429,7 @@ export default function PackDetails() {
                 onChange={(e) =>
                   handleBasicChange("description", e.target.value)
                 }
-              />
-              <Field>
-                <Label className="block text-sm font-medium text-gray-700 mb-1">
-                  Produits
-                </Label>
-                <Listbox
-                  value={selectedTitles}
-                  onChange={(values) => {
-                    setSelectedTitles(values);
-
-                    // Only store the _id of selected products
-                    const productIds = values.map((p) => p._id);
-
-                    handleBasicChange("products", productIds);
-                  }}
-                  multiple
-                >
-                  {({ open }) => (
-                    <div className="relative">
-                      <ListboxButton className="relative w-full py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md cursor-default focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                        <span
-                          className={`block truncate ${
-                            selectedTitles.length === 0 ? "text-gray-400" : ""
-                          }`}
-                        >
-                          {selectedTitles.length === 0
-                            ? "Please select an option"
-                            : selectedTitles
-                                .map((t) => t.Title || t.name)
-                                .join(", ")}
-                        </span>
-                        <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                          <ChevronUpDownIcon
-                            className="w-5 h-5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </ListboxButton>
-
-                      {open && (
-                        <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg">
-                          <ListboxOptions className="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
-                            {options.map((title) => (
-                              <ListboxOption key={title._id} value={title}>
-                                {({ selected, active }) => (
-                                  <div
-                                    className={`${
-                                      selected && active
-                                        ? "bg-gray-700 text-white"
-                                        : selected
-                                        ? "bg-gray-200 text-gray-900"
-                                        : active
-                                        ? "bg-blue-600 text-white"
-                                        : "text-gray-900"
-                                    } cursor-default select-none relative py-2 pl-3 pr-9`}
-                                  >
-                                    <span
-                                      className={`${
-                                        selected
-                                          ? "font-semibold"
-                                          : "font-normal"
-                                      } block truncate`}
-                                    >
-                                      {title.Title || title.name}
-                                    </span>
-
-                                    {selected && (
-                                      <span
-                                        className={`absolute inset-y-0 right-0 flex items-center pr-4 ${
-                                          active
-                                            ? "text-white"
-                                            : "text-indigo-600"
-                                        }`}
-                                      >
-                                        <CheckIcon
-                                          className="w-5 h-5"
-                                          aria-hidden="true"
-                                        />
-                                      </span>
-                                    )}
-                                  </div>
-                                )}
-                              </ListboxOption>
-                            ))}
-                          </ListboxOptions>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Listbox>
-              </Field>
+              /> */}
             </>
           ) : (
             <>
