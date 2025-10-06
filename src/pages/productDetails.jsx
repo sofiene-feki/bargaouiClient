@@ -480,26 +480,23 @@ export default function ProductDetails() {
                 <p className="md:text-3xl text-xl flex border-b border-gray-200 justify-between font-bold break-words bg-clip-text drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)] text-gray-900 py-2 mb-3">
                   {product?.promotion > 0 ? (
                     <div className="flex items-end gap-2">
-                      <div className="relative flex items-start">
-                        <h3 className="text-2xl md:text-4xl font-bold text-[#87a736] leading-none">
-                          {discountedPrice}{" "}
-                        </h3>
-                        <span className="absolute -top-1 right-0 translate-x-full text-sm font-semibold text-gray-700">
-                          DT
-                        </span>
-                      </div>
-
-                      <span className="line-through text-gray-400 text-xl md:ml-0 ml-3 mt-1">
+                      <span className="line-through text-gray-400 text-xl  mt-1">
                         {originalPrice}{" "}
                       </span>
-                      <span className="text-xs text-red-500 font-semibold">
-                        Économisez {savings} DT
-                      </span>
+                      <div className="relative flex items-start gap-1">
+                        <h3 className="text-2xl md:text-4xl font-bold text-green-600 leading-none">
+                          {discountedPrice}{" "}
+                        </h3>
+                        <span className="text-gray-800 text-xl ">د.ت </span>
+                      </div>
                     </div>
                   ) : (
                     <span>{formatPrice(product.Price)}</span>
                   )}
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 mt-2">
+                    <span className="text-xs text-red-500 font-semibold">
+                      Économisez {savings} DT
+                    </span>
                     {product.Quantity > 0 ? (
                       <span className="text-green-600 text-xs font-semibold">
                         En stock
