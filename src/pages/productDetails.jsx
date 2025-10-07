@@ -24,10 +24,14 @@ import {
 import { FormatDescription } from "../components/ui"; // Assuming you have this utility function
 import { FaShippingFast } from "react-icons/fa";
 import HorizontalSlider from "../components/ui/HorizontalSlider";
+import { useFacebookPixel } from "../hooks/useFacebookPixel";
+import { sendServerEvent } from "../functions/fbCapi";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
+
+const API_BASE_URL_MEDIA = import.meta.env.VITE_API_BASE_URL_MEDIA;
 
 export default function ProductDetails() {
   const { slug } = useParams(); // 👈 make sure your route param is `:slug`
@@ -35,6 +39,7 @@ export default function ProductDetails() {
   const user = useSelector((state) => state.user.userInfo);
   const navigate = useNavigate();
   const location = useLocation();
+  const { trackViewContent, trackAddToCart } = useFacebookPixel();
 
   const modeFromState = location.state?.mode || "view"; // default is view
   const [currentMode, setCurrentMode] = useState(modeFromState);
@@ -60,7 +65,25 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(isCreate ? emptyProduct : null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL_MEDIA = import.meta.env.VITE_API_BASE_URL_MEDIA;
+  useEffect(() => {
+    if (product?._id) {
+      trackViewContent(product);
+
+      // Optional: send server-side CAPI for ViewContent
+      sendServerEvent({
+        eventName: "ViewContent",
+        products: [
+          {
+            _id: product._id,
+            quantity: 1,
+            price: product.Price,
+            category: product.Category?.name || "Unknown",
+          },
+        ],
+        total: product.Price,
+      });
+    }
+  }, [product, trackViewContent]);
 
   // Normalize both media and colors
   const normalizeMediaSrc = (product) => {
@@ -134,11 +157,12 @@ export default function ProductDetails() {
   const handleAddToCart = () => {
     const finalPrice = promotion > 0 ? discountedPrice : originalPrice;
 
+    // ✅ Update Redux cart
     dispatch(
       addItem({
         productId: product._id,
         name: product.Title,
-        price: finalPrice, // ✅ use discounted or original
+        price: finalPrice,
         image: selectedMedia?.src,
         selectedSize: selectedSize?.name ?? null,
         selectedSizePrice: selectedSize?.price ?? null,
@@ -149,6 +173,23 @@ export default function ProductDetails() {
     );
 
     dispatch(openCart());
+
+    // ✅ Client-side FB tracking
+    trackAddToCart(product, finalPrice);
+
+    // ✅ Server-side CAPI tracking
+    sendServerEvent({
+      eventName: "AddToCart",
+      products: [
+        {
+          _id: product._id,
+          quantity: 1,
+          price: finalPrice,
+          category: product.Category?.name || "Unknown",
+        },
+      ],
+      total: finalPrice,
+    });
   };
 
   // Media functions

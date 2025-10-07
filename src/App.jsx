@@ -1,26 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React, { lazy, Suspense } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import logoBlack from "./assets/bragaouiBlack.png";
-
-import About from "./pages/about";
-import Shop from "./pages/shop";
 import Header from "./components/header/Header";
-import HeaderBottom from "./components/header/HeaderBottom";
 import Cart from "./components/cart/Cart";
-import ProductDetails from "./pages/productDetails";
-import Home from "./pages/home";
-import CheckoutPage from "./pages/checkout";
 import Footer from "./components/footer/Footer";
-import Category from "./pages/catrgory";
-import Contact from "./pages/contact";
-import Login from "./pages/login";
 import { ToastContainer } from "react-toastify";
-
+import { initFacebookPixel } from "./service/fbPixel";
 const LazyHome = lazy(() => import("./pages/home"));
 const LazyShop = lazy(() => import("./pages/shop"));
 const LazyAbout = lazy(() => import("./pages/about"));
@@ -39,7 +26,9 @@ function App() {
   // Pages where we DON'T want the header and headerBottom to show
   const hideHeaderPaths = ["/login"];
   const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
-
+  useEffect(() => {
+    initFacebookPixel();
+  }, []);
   return (
     <>
       <Suspense

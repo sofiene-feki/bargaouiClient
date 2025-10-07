@@ -11,11 +11,14 @@ import { GrMapLocation } from "react-icons/gr";
 import { PiUserLight } from "react-icons/pi";
 import { PiMapPinLineThin } from "react-icons/pi";
 import { FaCheckCircle } from "react-icons/fa";
+import { useFacebookPixel } from "../hooks/useFacebookPixel";
+import { sendServerEvent } from "../functions/fbCapi";
 
 export default function CheckoutPage() {
   const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { trackPurchase } = useFacebookPixel();
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -43,7 +46,10 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (cartItems.length === 0) return;
+
     setLoading(true);
+
     const orderData = {
       customer: formData,
       items: cartItems,
@@ -52,18 +58,46 @@ export default function CheckoutPage() {
       paymentMethod,
       total,
     };
+
     try {
-      // Send order to server
-      console.log(orderData);
+      // 1️⃣ Send order to your server
       const response = await createOrder(orderData);
       console.log("✅ Order placed successfully:", response);
 
-      // Open success dialog
+      // 2️⃣ Client-side Pixel
+      trackPurchase(cartItems, total);
+
+      // 3️⃣ Server-side CAPI
+      await sendServerEvent({
+        eventName: "Purchase",
+        customer: {
+          fullName: formData.fullName,
+          phone: formData.phone,
+          address: formData.address,
+          gouvernorat: formData.gouvernorat,
+          email: formData.email, // optional
+        },
+        products: cartItems.map((item) => ({
+          _id: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+          category: item.category || "Unknown",
+        })),
+        total,
+      });
+
+      // 4️⃣ Open success dialog
       setIsOpen(true);
 
-      // Optionally clear cart and form
-      // clearCart();
-      // setFormData({ fullName: "", phone: "", address: "" });
+      // 5️⃣ Optionally clear cart and form
+      dispatch(clearCart());
+      setFormData({
+        fullName: "",
+        phone: "",
+        email: "",
+        address: "",
+        gouvernorat: "",
+      });
     } catch (error) {
       console.error("❌ Error placing order:", error);
       alert("Something went wrong. Please try again.");

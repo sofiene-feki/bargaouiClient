@@ -15,6 +15,8 @@ import {
 } from "@heroicons/react/24/outline";
 import emptyCart from "../../assets/emptyCart.png";
 import CustomDialog from "../ui/Dialog";
+import { useFacebookPixel } from "../../hooks/useFacebookPixel";
+import { sendServerEvent } from "../../functions/fbCapi";
 
 export default function CartDrawer() {
   const dispatch = useDispatch();
@@ -22,6 +24,29 @@ export default function CartDrawer() {
   const isOpen = useSelector((state) => state.cartDrawer.isCartOpen);
   const items = useSelector((state) => state.cart.items);
   const totalPrice = useSelector((state) => state.cart.totalPrice);
+  const { trackInitiateCheckout } = useFacebookPixel();
+
+  const handleCheckoutClick = () => {
+    if (items.length === 0) return;
+
+    // Client-side Pixel
+    trackInitiateCheckout(items, totalPrice);
+
+    // Server-side CAPI
+    sendServerEvent({
+      eventName: "InitiateCheckout",
+      //user: { email: userEmail, phone: userPhone },
+      products: items.map((i) => ({
+        _id: i.productId,
+        quantity: i.quantity,
+        price: i.price,
+        category: i.category || "Unknown",
+      })),
+      totalPrice,
+    });
+
+    dispatch(closeCart());
+  };
 
   return (
     <CustomDialog
@@ -230,7 +255,7 @@ export default function CartDrawer() {
           <div className="mt-6">
             <Link to="checkout">
               <button
-                onClick={() => dispatch(closeCart())}
+                onClick={handleCheckoutClick}
                 disabled={items.length === 0}
                 className="flex w-full items-center gap-4 justify-center rounded-md bg-[#87a736] px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-[#87a736] disabled:opacity-50"
               >
