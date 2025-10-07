@@ -11,7 +11,7 @@ export const sendServerEvent = async ({
 }) => {
   try {
     const event_id = uuidv4();
-    const response = await axios.post(`${API_BASE_URL}/api/pixel/track`, {
+    const response = await axios.post(`${API_BASE_URL}/pixel/track`, {
       event_name: eventName,
       event_id,
       customer,
